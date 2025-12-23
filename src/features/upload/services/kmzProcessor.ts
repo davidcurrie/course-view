@@ -159,10 +159,12 @@ async function stitchTiles(tiles: TileInfo[]): Promise<Blob> {
   const ctx = canvas.getContext('2d')!
 
   // Load and draw all tiles
+  // Note: Invert Y-axis because tile coordinates use geographic convention
+  // (Y=0 at bottom/south) but canvas has Y=0 at top
   for (const tile of tiles) {
     const img = await loadImage(tile.imageBlob)
     const x = tile.x * tileWidth
-    const y = tile.y * tileHeight
+    const y = (maxY - tile.y) * tileHeight // Invert Y-axis
     ctx.drawImage(img, x, y, tileWidth, tileHeight)
   }
 
