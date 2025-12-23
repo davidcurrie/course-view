@@ -2,7 +2,8 @@ import { XMLParser } from 'fast-xml-parser'
 import { Course, Control, Position } from '../../../shared/types'
 
 interface IOFControl {
-  '@_id': string
+  '@_type'?: string
+  Id: string
   Position: {
     '@_lat': string
     '@_lng': string
@@ -12,12 +13,11 @@ interface IOFControl {
 
 interface IOFCourseControl {
   '@_type': 'Start' | 'Control' | 'Finish'
-  Control?: string // Control ID reference
-  '@_sequence'?: string
+  Control: string // Control ID reference
+  MapText?: string
 }
 
 interface IOFCourse {
-  '@_id'?: string
   Name: string
   CourseControl: IOFCourseControl | IOFCourseControl[]
 }
@@ -89,13 +89,13 @@ export async function parseCourseData(xmlContent: string): Promise<Course[]> {
 
   const raceData = data.CourseData.RaceCourseData
 
-  // Parse all controls into a map
+  // Parse all controls into a map (indexed by ID)
   const controlsMap = new Map<string, IOFControl>()
   const controls = ensureArray(raceData.Control)
 
   controls.forEach(control => {
-    if (control['@_id']) {
-      controlsMap.set(control['@_id'], control)
+    if (control.Id) {
+      controlsMap.set(control.Id, control)
     }
   })
 
@@ -109,56 +109,45 @@ export async function parseCourseData(xmlContent: string): Promise<Course[]> {
     let start: Position | null = null
     let finish: Position | null = null
     const controls: Control[] = []
+    let controlSequence = 0
 
-    courseControls.forEach((cc, sequence) => {
+    courseControls.forEach(cc => {
+      const controlId = cc.Control
+
+      if (!controlId) {
+        return // Skip if no control ID
+      }
+
+      const control = controlsMap.get(controlId)
+      if (!control?.Position) {
+        console.warn(`Control ${controlId} not found or has no position`)
+        return
+      }
+
+      const position: Position = {
+        lat: parseFloat(control.Position['@_lat']),
+        lng: parseFloat(control.Position['@_lng']),
+      }
+
       if (cc['@_type'] === 'Start') {
-        // Start position
-        const controlId = cc.Control
-        if (controlId) {
-          const control = controlsMap.get(controlId)
-          if (control?.Position) {
-            start = {
-              lat: parseFloat(control.Position['@_lat']),
-              lng: parseFloat(control.Position['@_lng']),
-            }
-          }
-        }
+        start = position
       } else if (cc['@_type'] === 'Finish') {
-        // Finish position
-        const controlId = cc.Control
-        if (controlId) {
-          const control = controlsMap.get(controlId)
-          if (control?.Position) {
-            finish = {
-              lat: parseFloat(control.Position['@_lat']),
-              lng: parseFloat(control.Position['@_lng']),
-            }
-          }
-        }
-      } else if (cc['@_type'] === 'Control' || !cc['@_type']) {
-        // Regular control
-        const controlId = cc.Control
-        if (controlId) {
-          const control = controlsMap.get(controlId)
-          if (control?.Position) {
-            controls.push({
-              id: controlId,
-              code: control.Code || controlId,
-              position: {
-                lat: parseFloat(control.Position['@_lat']),
-                lng: parseFloat(control.Position['@_lng']),
-              },
-              number: sequence + 1, // Control number in sequence
-            })
-          }
-        }
+        finish = position
+      } else if (cc['@_type'] === 'Control') {
+        controlSequence++
+        controls.push({
+          id: controlId,
+          code: control.Id, // Use ID as code if no Code element
+          position,
+          number: controlSequence,
+        })
       }
     })
 
     // Only add course if it has start, finish, and at least one control
     if (start && finish && controls.length > 0) {
       courses.push({
-        id: iofCourse['@_id'] || `course-${index}`,
+        id: `course-${index}`,
         name: iofCourse.Name || `Course ${index + 1}`,
         controls,
         start,
