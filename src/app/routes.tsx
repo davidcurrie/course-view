@@ -1,9 +1,20 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import Layout from './Layout'
 import App from './App'
-import { UploadPage } from '../features/upload/components'
-import { MapPage } from '../features/map/components/MapPage'
-import { EventsPage } from '../features/events/components'
+import { Loading } from '../shared/components'
+
+// Lazy load heavy components for better initial load time
+const UploadPage = lazy(() => import('../features/upload/components').then(m => ({ default: m.UploadPage })))
+const MapPage = lazy(() => import('../features/map/components/MapPage').then(m => ({ default: m.MapPage })))
+const EventsPage = lazy(() => import('../features/events/components').then(m => ({ default: m.EventsPage })))
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <Loading />
+  </div>
+)
 
 export const router = createBrowserRouter([
   {
@@ -16,15 +27,27 @@ export const router = createBrowserRouter([
       },
       {
         path: 'events',
-        element: <EventsPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <EventsPage />
+          </Suspense>
+        ),
       },
       {
         path: 'upload',
-        element: <UploadPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <UploadPage />
+          </Suspense>
+        ),
       },
       {
         path: 'map/:eventId',
-        element: <MapPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <MapPage />
+          </Suspense>
+        ),
       },
     ],
   },

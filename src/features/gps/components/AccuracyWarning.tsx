@@ -36,6 +36,8 @@ export function AccuracyWarning({ accuracy, isTracking }: AccuracyWarningProps) 
         pointerEvents: 'auto'
       }}
       role="alert"
+      aria-live="polite"
+      aria-atomic="true"
     >
       <div className="flex items-center gap-2">
         <svg
