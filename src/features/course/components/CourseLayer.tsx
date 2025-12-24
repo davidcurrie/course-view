@@ -18,17 +18,6 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
 
     console.log('CourseLayer effect running with', courses.length, 'courses', 'useProjectedCoords:', useProjectedCoords)
 
-    // Log map bounds for debugging
-    if (map) {
-      const bounds = map.getBounds()
-      console.log('Map bounds:', {
-        north: bounds.getNorth(),
-        south: bounds.getSouth(),
-        east: bounds.getEast(),
-        west: bounds.getWest()
-      })
-    }
-
     // Create coordinate transform function
     const transform = (pos: Position): [number, number] => {
       if (useProjectedCoords) {
@@ -60,6 +49,20 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
     // Small delay to ensure map is fully initialized
     const timeoutId = setTimeout(() => {
       console.log('Timeout callback executing, rendering courses...')
+
+      // Log map bounds for debugging
+      try {
+        const bounds = map.getBounds()
+        console.log('Map bounds:', {
+          north: bounds.getNorth(),
+          south: bounds.getSouth(),
+          east: bounds.getEast(),
+          west: bounds.getWest()
+        })
+      } catch (e) {
+        console.warn('Could not get map bounds:', e)
+      }
+
       try {
         // Remove layers for courses that are no longer visible
         currentLayers.forEach((layer, courseId) => {
