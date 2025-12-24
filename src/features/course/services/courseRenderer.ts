@@ -70,11 +70,29 @@ export function extractUniqueControls(courses: Course[]): UniqueControl[] {
 }
 
 /**
+ * Calculate bearing from one position to another (in degrees)
+ */
+function calculateBearing(from: Position, to: Position): number {
+  const lat1 = from.lat * Math.PI / 180
+  const lat2 = to.lat * Math.PI / 180
+  const dLng = (to.lng - from.lng) * Math.PI / 180
+
+  const y = Math.sin(dLng) * Math.cos(lat2)
+  const x = Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng)
+
+  const bearing = Math.atan2(y, x) * 180 / Math.PI
+  return (bearing + 360) % 360 // Normalize to 0-360
+}
+
+/**
  * Create a start marker (equilateral triangle) - always purple
  * Side length: 6mm at 1:15,000 = 90m on ground
+ * Rotates to point toward first control
  */
 export function createStartMarker(
   position: Position,
+  firstControl: Position | null,
   courseName: string,
   transform: CoordinateTransform = pos => [pos.lat, pos.lng],
   zoom: number = 15
@@ -84,28 +102,39 @@ export function createStartMarker(
 
   // Side length: 6mm at 1:15,000 = 90m
   const sideLength = 90 // meters
-  const height = (Math.sqrt(3) / 2) * sideLength // ~77.94m
 
-  // Calculate triangle vertices (equilateral, pointing up)
+  // Calculate bearing to first control (0 = north, 90 = east)
+  const bearing = firstControl ? calculateBearing(position, firstControl) : 0
+
   const lat = position.lat
   const metersPerDegreeLat = 111320
   const metersPerDegreeLng = 111320 * Math.cos(lat * Math.PI / 180)
 
-  // Top vertex (center top)
-  const topLat = coords[0] + (2 * height / 3) / metersPerDegreeLat
-  const topLng = coords[1]
+  // For an equilateral triangle, all vertices are at the same distance from center
+  // Distance from centroid to vertex = sideLength / sqrt(3)
+  const radiusFromCenter = sideLength / Math.sqrt(3) // ~51.96m
 
-  // Bottom left vertex
-  const bottomLat = coords[0] - (height / 3) / metersPerDegreeLat
-  const bottomLeftLng = coords[1] - (sideLength / 2) / metersPerDegreeLng
+  // Calculate rotated vertices (120 degrees apart)
+  const bearingRad = bearing * Math.PI / 180
 
-  // Bottom right vertex
-  const bottomRightLng = coords[1] + (sideLength / 2) / metersPerDegreeLng
+  // Top vertex (points in direction of first control)
+  const topLat = coords[0] + (radiusFromCenter * Math.cos(bearingRad)) / metersPerDegreeLat
+  const topLng = coords[1] + (radiusFromCenter * Math.sin(bearingRad)) / metersPerDegreeLng
+
+  // Bottom right vertex (120 degrees clockwise from top)
+  const brAngle = bearingRad + (2 * Math.PI / 3)
+  const bottomRightLat = coords[0] + (radiusFromCenter * Math.cos(brAngle)) / metersPerDegreeLat
+  const bottomRightLng = coords[1] + (radiusFromCenter * Math.sin(brAngle)) / metersPerDegreeLng
+
+  // Bottom left vertex (120 degrees counter-clockwise from top)
+  const blAngle = bearingRad - (2 * Math.PI / 3)
+  const bottomLeftLat = coords[0] + (radiusFromCenter * Math.cos(blAngle)) / metersPerDegreeLat
+  const bottomLeftLng = coords[1] + (radiusFromCenter * Math.sin(blAngle)) / metersPerDegreeLng
 
   const trianglePoints: L.LatLngExpression[] = [
     [topLat, topLng],
-    [bottomLat, bottomRightLng],
-    [bottomLat, bottomLeftLng]
+    [bottomRightLat, bottomRightLng],
+    [bottomLeftLat, bottomLeftLng]
   ]
 
   const triangle = L.polygon(trianglePoints, {
@@ -128,6 +157,35 @@ export function createStartMarker(
   })
 
   return layerGroup
+}
+
+/**
+ * Calculate the vertex of the start triangle that points toward the first control
+ */
+export function getStartTriangleVertex(
+  start: Position,
+  firstControl: Position | null,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): [number, number] {
+  if (!firstControl) {
+    return transform(start)
+  }
+
+  const coords = transform(start)
+  const sideLength = 90
+  const radiusFromCenter = sideLength / Math.sqrt(3) // Same as in createStartMarker
+
+  const bearing = calculateBearing(start, firstControl)
+  const bearingRad = bearing * Math.PI / 180
+
+  const lat = start.lat
+  const metersPerDegreeLat = 111320
+  const metersPerDegreeLng = 111320 * Math.cos(lat * Math.PI / 180)
+
+  const topLat = coords[0] + (radiusFromCenter * Math.cos(bearingRad)) / metersPerDegreeLat
+  const topLng = coords[1] + (radiusFromCenter * Math.sin(bearingRad)) / metersPerDegreeLng
+
+  return [topLat, topLng]
 }
 
 /**
@@ -308,15 +366,17 @@ export function createCoursePolylines(
 
   if (course.controls.length === 0) {
     // No controls, just start to finish
+    const startVertex = getStartTriangleVertex(course.start, null, transform)
     const positions = [
-      transform(course.start),
+      startVertex,
       transform(course.finish)
     ]
     polylines.push(L.polyline(positions, polylineOptions))
     return polylines
   }
 
-  // Segment 1: Start to first control
+  // Segment 1: Start vertex to first control edge
+  const startVertex = getStartTriangleVertex(course.start, course.controls[0].position, transform)
   const firstControlEntry = getCircleEdgePoint(
     course.start,
     course.controls[0].position,
@@ -324,7 +384,7 @@ export function createCoursePolylines(
     transform
   )
   polylines.push(L.polyline([
-    transform(course.start),
+    startVertex,
     firstControlEntry
   ], polylineOptions))
 
@@ -384,7 +444,8 @@ export function createCourseLayer(
   polylines.forEach(polyline => polyline.addTo(layerGroup))
 
   // Add start marker
-  const startMarker = createStartMarker(course.start, course.name, transform, zoom)
+  const firstControl = course.controls.length > 0 ? course.controls[0].position : null
+  const startMarker = createStartMarker(course.start, firstControl, course.name, transform, zoom)
   startMarker.addTo(layerGroup)
 
   // Add finish marker
