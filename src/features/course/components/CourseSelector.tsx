@@ -54,15 +54,15 @@ export function CourseSelector({ courses, onToggleCourse, onToggleAll }: CourseS
 
       {/* Course List */}
       {isExpanded && (
-        <div className="overflow-y-auto flex-1 p-2" style={{ maxHeight: 'calc(70vh - 100px)' }}>
+        <div className="overflow-y-auto flex-1 p-1" style={{ maxHeight: 'calc(70vh - 100px)' }}>
           {courses.length === 0 ? (
             <p className="text-sm text-gray-500 p-2">No courses available</p>
           ) : (
-            <div className="space-y-1">
+            <div>
               {courses.map(course => (
                 <label
                   key={course.id}
-                  className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center gap-2 py-1 px-2 rounded hover:bg-gray-50 cursor-pointer"
                   style={{ minHeight: '44px' }} // Touch target
                 >
                   <input
