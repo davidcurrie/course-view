@@ -1,20 +1,35 @@
 import { useEffect, useRef } from 'react'
 import L from 'leaflet'
-import { Course } from '../../../shared/types'
+import { Course, Position } from '../../../shared/types'
 import { createCourseLayer } from '../services/courseRenderer'
+import { latLngToUTM } from '../../../shared/utils/projection'
 
 interface CourseLayerProps {
   map: L.Map | null
   courses: Course[]
+  useProjectedCoords: boolean
 }
 
-export function CourseLayer({ map, courses }: CourseLayerProps) {
+export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerProps) {
   const layersRef = useRef<Map<string, L.LayerGroup>>(new Map())
 
   useEffect(() => {
     if (!map) return
 
-    console.log('CourseLayer effect running with', courses.length, 'courses')
+    console.log('CourseLayer effect running with', courses.length, 'courses', 'useProjectedCoords:', useProjectedCoords)
+
+    // Create coordinate transform function
+    const transform = (pos: Position): [number, number] => {
+      if (useProjectedCoords) {
+        // Convert WGS84 lat/lng to UTM
+        const { x, y } = latLngToUTM(pos)
+        console.log(`Transform: lat=${pos.lat}, lng=${pos.lng} -> x=${x}, y=${y}`)
+        return [y, x] // Note: Leaflet uses [lat, lng] order, so [y, x] for projected
+      } else {
+        // Use lat/lng directly for geographic CRS
+        return [pos.lat, pos.lng]
+      }
+    }
 
     // Validate map has a container
     try {
@@ -49,7 +64,7 @@ export function CourseLayer({ map, courses }: CourseLayerProps) {
           console.log('Processing course:', course.name, 'visible:', course.visible, 'already rendered:', currentLayers.has(course.id))
           if (course.visible && !currentLayers.has(course.id)) {
             console.log('Creating layer for course:', course.name)
-            const layer = createCourseLayer(course)
+            const layer = createCourseLayer(course, transform)
             console.log('Adding layer to map...')
             layer.addTo(map)
             currentLayers.set(course.id, layer)
@@ -74,7 +89,7 @@ export function CourseLayer({ map, courses }: CourseLayerProps) {
       })
       currentLayers.clear()
     }
-  }, [map, courses])
+  }, [map, courses, useProjectedCoords])
 
   return null // This component doesn't render anything itself
 }

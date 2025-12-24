@@ -18,6 +18,7 @@ export function MapPage() {
   const [error, setError] = useState<string>('')
   const [map, setMap] = useState<L.Map | null>(null)
   const [courses, setCourses] = useState<Course[]>([])
+  const [useProjectedCoords, setUseProjectedCoords] = useState(false)
 
   useEffect(() => {
     async function loadEvent() {
@@ -38,6 +39,19 @@ export function MapPage() {
 
         setEvent(loadedEvent)
         setCourses(loadedEvent.courses)
+
+        // Determine if using projected coordinates
+        const georef = loadedEvent.map.georef
+        const bounds = loadedEvent.map.bounds
+        const isGeographic =
+          georef.type === 'kmz' ||
+          (Math.abs(georef.topLeftY) <= 90 &&
+            Math.abs(georef.topLeftX) <= 180 &&
+            Math.abs(bounds.north) <= 90 &&
+            Math.abs(bounds.south) <= 90 &&
+            Math.abs(bounds.east) <= 180 &&
+            Math.abs(bounds.west) <= 180)
+        setUseProjectedCoords(!isGeographic)
 
         // Create object URL from image blob
         const url = URL.createObjectURL(loadedEvent.map.imageBlob)
@@ -125,7 +139,7 @@ export function MapPage() {
           onToggleAll={handleToggleAll}
         />
         <ZoomControls map={map} />
-        <CourseLayer map={map} courses={courses} />
+        <CourseLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
       </div>
     </div>
   )

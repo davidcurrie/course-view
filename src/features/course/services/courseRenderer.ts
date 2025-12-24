@@ -1,10 +1,17 @@
 import L from 'leaflet'
 import { Course, Control, Position } from '../../../shared/types'
 
+type CoordinateTransform = (pos: Position) => [number, number]
+
 /**
  * Create a start marker (triangle)
  */
-export function createStartMarker(position: Position, color: string, courseName: string): L.Marker {
+export function createStartMarker(
+  position: Position,
+  color: string,
+  courseName: string,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): L.Marker {
   const icon = L.divIcon({
     className: 'orienteering-start-marker',
     html: `
@@ -16,7 +23,8 @@ export function createStartMarker(position: Position, color: string, courseName:
     iconAnchor: [15, 15],
   })
 
-  const marker = L.marker([position.lat, position.lng], { icon })
+  const coords = transform(position)
+  const marker = L.marker(coords, { icon })
 
   // Add popup
   marker.bindPopup(`
@@ -39,7 +47,8 @@ export function createControlMarker(
   control: Control,
   position: Position,
   color: string,
-  courseName: string
+  courseName: string,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
 ): L.Marker {
   const icon = L.divIcon({
     className: 'orienteering-control-marker',
@@ -56,7 +65,8 @@ export function createControlMarker(
     iconAnchor: [20, 20],
   })
 
-  const marker = L.marker([position.lat, position.lng], { icon })
+  const coords = transform(position)
+  const marker = L.marker(coords, { icon })
 
   // Add popup with control information
   const popupContent = `
@@ -77,7 +87,12 @@ export function createControlMarker(
 /**
  * Create a finish marker (double circle)
  */
-export function createFinishMarker(position: Position, color: string, courseName: string): L.Marker {
+export function createFinishMarker(
+  position: Position,
+  color: string,
+  courseName: string,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): L.Marker {
   const icon = L.divIcon({
     className: 'orienteering-finish-marker',
     html: `
@@ -90,7 +105,8 @@ export function createFinishMarker(position: Position, color: string, courseName
     iconAnchor: [15, 15],
   })
 
-  const marker = L.marker([position.lat, position.lng], { icon })
+  const coords = transform(position)
+  const marker = L.marker(coords, { icon })
 
   // Add popup
   marker.bindPopup(`
@@ -109,11 +125,14 @@ export function createFinishMarker(position: Position, color: string, courseName
 /**
  * Create a polyline connecting course controls
  */
-export function createCoursePolyline(course: Course): L.Polyline {
+export function createCoursePolyline(
+  course: Course,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): L.Polyline {
   const positions: L.LatLngExpression[] = [
-    [course.start.lat, course.start.lng],
-    ...course.controls.map(c => [c.position.lat, c.position.lng] as L.LatLngExpression),
-    [course.finish.lat, course.finish.lng],
+    transform(course.start),
+    ...course.controls.map(c => transform(c.position)),
+    transform(course.finish),
   ]
 
   return L.polyline(positions, {
@@ -128,25 +147,28 @@ export function createCoursePolyline(course: Course): L.Polyline {
 /**
  * Create a layer group for a course (without adding to map)
  */
-export function createCourseLayer(course: Course): L.LayerGroup {
+export function createCourseLayer(
+  course: Course,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): L.LayerGroup {
   const layerGroup = L.layerGroup()
 
   // Add course line
-  const polyline = createCoursePolyline(course)
+  const polyline = createCoursePolyline(course, transform)
   polyline.addTo(layerGroup)
 
   // Add start marker
-  const startMarker = createStartMarker(course.start, course.color, course.name)
+  const startMarker = createStartMarker(course.start, course.color, course.name, transform)
   startMarker.addTo(layerGroup)
 
   // Add control markers
   course.controls.forEach(control => {
-    const marker = createControlMarker(control, control.position, course.color, course.name)
+    const marker = createControlMarker(control, control.position, course.color, course.name, transform)
     marker.addTo(layerGroup)
   })
 
   // Add finish marker
-  const finishMarker = createFinishMarker(course.finish, course.color, course.name)
+  const finishMarker = createFinishMarker(course.finish, course.color, course.name, transform)
   finishMarker.addTo(layerGroup)
 
   return layerGroup
