@@ -78,7 +78,8 @@ export function CourseSelector({ courses, onToggleCourse, onToggleAll }: CourseS
                       backgroundColor: course.color,
                       borderRadius: '3px',
                       border: '1px solid rgba(0,0,0,0.1)',
-                      flexShrink: 0
+                      flexShrink: 0,
+                      marginRight: '8px'
                     }}
                     aria-label={`Course color: ${course.color}`}
                   />
