@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import { Course, Position } from '../../../shared/types'
-import { createCourseLayer } from '../services/courseRenderer'
+import { createCourseLayer, calculateLineWidth } from '../services/courseRenderer'
 
 interface CourseLayerProps {
   map: L.Map | null
@@ -11,11 +11,41 @@ interface CourseLayerProps {
 
 export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerProps) {
   const layersRef = useRef<Map<string, L.LayerGroup>>(new Map())
+  const [zoom, setZoom] = useState<number>(15)
+
+  // Listen for zoom changes
+  useEffect(() => {
+    if (!map) return
+
+    const handleZoomEnd = () => {
+      const newZoom = map.getZoom()
+      setZoom(newZoom)
+
+      // Update line widths for all polylines
+      const lineWidth = calculateLineWidth(newZoom)
+      layersRef.current.forEach(layer => {
+        layer.eachLayer((sublayer) => {
+          if (sublayer instanceof L.Polyline) {
+            sublayer.setStyle({ weight: lineWidth })
+          }
+        })
+      })
+    }
+
+    // Set initial zoom
+    setZoom(map.getZoom())
+
+    map.on('zoomend', handleZoomEnd)
+
+    return () => {
+      map.off('zoomend', handleZoomEnd)
+    }
+  }, [map])
 
   useEffect(() => {
     if (!map) return
 
-    console.log('CourseLayer effect running with', courses.length, 'courses', 'useProjectedCoords:', useProjectedCoords)
+    console.log('CourseLayer effect running with', courses.length, 'courses', 'useProjectedCoords:', useProjectedCoords, 'zoom:', zoom)
 
     // For projected coordinates, we cannot render courses without knowing the projection
     if (useProjectedCoords) {
@@ -82,7 +112,7 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
           console.log('Processing course:', course.name, 'visible:', course.visible, 'already rendered:', currentLayers.has(course.id))
           if (course.visible && !currentLayers.has(course.id)) {
             console.log('Creating layer for course:', course.name)
-            const layer = createCourseLayer(course, transform)
+            const layer = createCourseLayer(course, transform, zoom)
             console.log('Adding layer to map...')
             layer.addTo(map)
             currentLayers.set(course.id, layer)
@@ -107,7 +137,7 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
       })
       currentLayers.clear()
     }
-  }, [map, courses, useProjectedCoords])
+  }, [map, courses, useProjectedCoords, zoom])
 
   return null // This component doesn't render anything itself
 }

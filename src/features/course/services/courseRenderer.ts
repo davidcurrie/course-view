@@ -4,6 +4,26 @@ import { Course, Position } from '../../../shared/types'
 type CoordinateTransform = (pos: Position) => [number, number]
 
 /**
+ * Calculate appropriate line width in pixels for current zoom level
+ * Target: 0.35mm on a 1:15,000 scale map = 5.25m on ground
+ * @param zoom Current map zoom level
+ * @param latitude Latitude for calculating resolution (default 51 for UK)
+ */
+export function calculateLineWidth(zoom: number, latitude: number = 51): number {
+  // Web Mercator resolution: meters per pixel at given zoom and latitude
+  const resolution = 156543.04 * Math.cos(latitude * Math.PI / 180) / Math.pow(2, zoom)
+
+  // 0.35mm at 1:15,000 scale = 5.25m on ground
+  const targetWidthMeters = 5.25
+
+  // Calculate pixel width
+  const pixelWidth = targetWidthMeters / resolution
+
+  // Clamp between 1 and 10 pixels for usability
+  return Math.max(1, Math.min(10, pixelWidth))
+}
+
+/**
  * Represents a unique control with all courses that visit it
  */
 export interface UniqueControl {
@@ -247,14 +267,15 @@ function getFinishEdgePoint(
  */
 export function createCoursePolylines(
   course: Course,
-  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15
 ): L.Polyline[] {
   const polylines: L.Polyline[] = []
   const controlRadius = 37.5 // Control circle radius in meters
 
   const polylineOptions: L.PolylineOptions = {
     color: course.color,
-    weight: 3,
+    weight: calculateLineWidth(zoom),
     opacity: 0.7,
     lineJoin: 'round' as const,
     lineCap: 'round' as const,
@@ -328,12 +349,13 @@ export function createCoursePolylines(
  */
 export function createCourseLayer(
   course: Course,
-  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15
 ): L.LayerGroup {
   const layerGroup = L.layerGroup()
 
   // Add course line segments (with gaps at controls)
-  const polylines = createCoursePolylines(course, transform)
+  const polylines = createCoursePolylines(course, transform, zoom)
   polylines.forEach(polyline => polyline.addTo(layerGroup))
 
   // Add start marker
