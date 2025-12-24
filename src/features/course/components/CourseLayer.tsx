@@ -18,13 +18,25 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
 
     console.log('CourseLayer effect running with', courses.length, 'courses', 'useProjectedCoords:', useProjectedCoords)
 
+    // Log map bounds for debugging
+    if (map) {
+      const bounds = map.getBounds()
+      console.log('Map bounds:', {
+        north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        west: bounds.getWest()
+      })
+    }
+
     // Create coordinate transform function
     const transform = (pos: Position): [number, number] => {
       if (useProjectedCoords) {
         // Convert WGS84 lat/lng to UTM
         const { x, y } = latLngToUTM(pos)
-        console.log(`Transform: lat=${pos.lat}, lng=${pos.lng} -> x=${x}, y=${y}`)
-        return [y, x] // Note: Leaflet uses [lat, lng] order, so [y, x] for projected
+        const result: [number, number] = [y, x] // Leaflet Simple CRS uses [Y, X] = [northing, easting]
+        console.log(`Transform: lat=${pos.lat}, lng=${pos.lng} -> UTM x=${x} (easting), y=${y} (northing) -> Leaflet coords [${result[0]}, ${result[1]}]`)
+        return result
       } else {
         // Use lat/lng directly for geographic CRS
         return [pos.lat, pos.lng]
