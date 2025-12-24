@@ -8,6 +8,7 @@ import { ZoomControls } from './ZoomControls'
 import { Loading } from '../../../shared/components/Loading'
 import { CourseSelector } from '../../course/components/CourseSelector'
 import { CourseLayer } from '../../course/components/CourseLayer'
+import { ControlsLayer } from '../../course/components/ControlsLayer'
 
 export function MapPage() {
   const { eventId } = useParams<{ eventId: string }>()
@@ -133,12 +134,17 @@ export function MapPage() {
           georef={event.map.georef}
           onMapReady={setMap}
         />
-        <CourseSelector
-          courses={courses}
-          onToggleCourse={handleToggleCourse}
-          onToggleAll={handleToggleAll}
-        />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 1000 }}>
+          <div style={{ pointerEvents: 'auto' }}>
+            <CourseSelector
+              courses={courses}
+              onToggleCourse={handleToggleCourse}
+              onToggleAll={handleToggleAll}
+            />
+          </div>
+        </div>
         <ZoomControls map={map} />
+        <ControlsLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
         <CourseLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
       </div>
     </div>

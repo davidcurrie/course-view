@@ -1,7 +1,53 @@
 import L from 'leaflet'
-import { Course, Control, Position } from '../../../shared/types'
+import { Course, Position } from '../../../shared/types'
 
 type CoordinateTransform = (pos: Position) => [number, number]
+
+/**
+ * Represents a unique control with all courses that visit it
+ */
+export interface UniqueControl {
+  code: string
+  position: Position
+  courses: Array<{
+    courseId: string
+    courseName: string
+    courseColor: string
+    controlNumber: number
+  }>
+}
+
+/**
+ * Extract unique controls from all courses
+ */
+export function extractUniqueControls(courses: Course[]): UniqueControl[] {
+  const controlMap = new Map<string, UniqueControl>()
+
+  courses.forEach(course => {
+    course.controls.forEach(control => {
+      // Use code + position as unique key
+      const key = `${control.code}_${control.position.lat}_${control.position.lng}`
+
+      if (!controlMap.has(key)) {
+        controlMap.set(key, {
+          code: control.code,
+          position: control.position,
+          courses: []
+        })
+      }
+
+      const uniqueControl = controlMap.get(key)!
+      uniqueControl.courses.push({
+        courseId: course.id,
+        courseName: course.name,
+        courseColor: course.color,
+        controlNumber: control.number
+      })
+    })
+  })
+
+  return Array.from(controlMap.values())
+}
 
 /**
  * Create a start marker (triangle)
@@ -41,44 +87,53 @@ export function createStartMarker(
 }
 
 /**
- * Create a control marker (circle with number)
+ * Create a control marker (circle with code label)
+ * Shows all courses that visit this control
  */
 export function createControlMarker(
-  control: Control,
-  position: Position,
-  color: string,
-  courseName: string,
+  uniqueControl: UniqueControl,
   transform: CoordinateTransform = pos => [pos.lat, pos.lng]
 ): L.Marker {
   const icon = L.divIcon({
     className: 'orienteering-control-marker',
     html: `
-      <svg width="40" height="40" viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="12" fill="none" stroke="${color}" stroke-width="3"/>
-        <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
-              font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="${color}">
-          ${control.number}
-        </text>
-      </svg>
+      <div style="position: relative; width: 60px; height: 40px;">
+        <svg width="40" height="40" viewBox="0 0 40 40" style="position: absolute; left: 0; top: 0;">
+          <circle cx="20" cy="20" r="12" fill="none" stroke="#e63946" stroke-width="3"/>
+        </svg>
+        <div style="position: absolute; left: 40px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: #e63946; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;">
+          ${uniqueControl.code}
+        </div>
+      </div>
     `,
-    iconSize: [40, 40],
+    iconSize: [60, 40],
     iconAnchor: [20, 20],
   })
 
-  const coords = transform(position)
+  const coords = transform(uniqueControl.position)
   const marker = L.marker(coords, { icon })
 
-  // Add popup with control information
+  // Add popup with all courses visiting this control
+  const coursesList = uniqueControl.courses
+    .map(c => `
+      <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">
+        <div style="width: 12px; height: 12px; background-color: ${c.courseColor}; border-radius: 2px;"></div>
+        <span style="font-size: 12px;">${c.courseName} - Control ${c.controlNumber}</span>
+      </div>
+    `)
+    .join('')
+
   const popupContent = `
-    <div style="font-family: Arial, sans-serif; min-width: 120px;">
-      <div style="font-weight: bold; margin-bottom: 4px;">Control ${control.number}</div>
-      <div style="font-size: 12px; color: #666;">Code: ${control.code}</div>
-      <div style="font-size: 12px; color: #666; margin-top: 4px;">Course: ${courseName}</div>
+    <div style="font-family: Arial, sans-serif; min-width: 180px;">
+      <div style="font-weight: bold; margin-bottom: 8px;">Control ${uniqueControl.code}</div>
+      <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Courses:</div>
+      ${coursesList}
     </div>
   `
+
   marker.bindPopup(popupContent, {
     closeButton: true,
-    minWidth: 120,
+    minWidth: 180,
   })
 
   return marker
@@ -184,6 +239,8 @@ export function createCoursePolyline(
 
 /**
  * Create a layer group for a course (without adding to map)
+ * Only includes course-specific elements: start, finish, and polyline
+ * Controls are rendered separately in ControlsLayer
  */
 export function createCourseLayer(
   course: Course,
@@ -199,15 +256,26 @@ export function createCourseLayer(
   const startMarker = createStartMarker(course.start, course.color, course.name, transform)
   startMarker.addTo(layerGroup)
 
-  // Add control markers
-  course.controls.forEach(control => {
-    const marker = createControlMarker(control, control.position, course.color, course.name, transform)
-    marker.addTo(layerGroup)
-  })
-
   // Add finish marker
   const finishMarker = createFinishMarker(course.finish, course.color, course.name, transform)
   finishMarker.addTo(layerGroup)
+
+  return layerGroup
+}
+
+/**
+ * Create a layer group for all unique controls (always visible)
+ */
+export function createControlsLayer(
+  uniqueControls: UniqueControl[],
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
+): L.LayerGroup {
+  const layerGroup = L.layerGroup()
+
+  uniqueControls.forEach(uniqueControl => {
+    const marker = createControlMarker(uniqueControl, transform)
+    marker.addTo(layerGroup)
+  })
 
   return layerGroup
 }
