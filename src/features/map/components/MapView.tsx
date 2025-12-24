@@ -18,17 +18,40 @@ export function MapView({ imageUrl, bounds, georef, onMapReady }: MapViewProps) 
   useEffect(() => {
     if (!mapContainer.current) return
 
-    // Determine CRS based on georef type
+    // Determine CRS based on georef type and coordinate values
     // KMZ files use geographic coordinates (WGS84 lat/lng)
-    // Use EPSG3857 (Web Mercator) which is the standard for web maps
-    // World files use projected/arbitrary coordinates
-    const crs = georef.type === 'kmz' ? L.CRS.EPSG3857 : L.CRS.Simple
+    // World files might use geographic or projected coordinates
+    let crs: L.CRS
+
+    if (georef.type === 'kmz') {
+      // KMZ always uses geographic coordinates
+      crs = L.CRS.EPSG3857
+    } else {
+      // For world files, check if coordinates look like lat/lng
+      // Geographic coordinates: latitude (-90 to 90), longitude (-180 to 180)
+      const isGeographic =
+        Math.abs(georef.topLeftY) <= 90 &&
+        Math.abs(georef.topLeftX) <= 180 &&
+        Math.abs(bounds.north) <= 90 &&
+        Math.abs(bounds.south) <= 90 &&
+        Math.abs(bounds.east) <= 180 &&
+        Math.abs(bounds.west) <= 180
+
+      crs = isGeographic ? L.CRS.EPSG3857 : L.CRS.Simple
+      console.log('World file CRS detection:', {
+        topLeft: [georef.topLeftY, georef.topLeftX],
+        bounds,
+        isGeographic,
+        selectedCRS: isGeographic ? 'EPSG3857' : 'Simple'
+      })
+    }
 
     // Zoom levels depend on CRS
     // For geographic CRS (EPSG3857), use web map zoom levels (10-22)
     // For Simple CRS, use arbitrary zoom levels (-2 to 4)
-    const minZoom = georef.type === 'kmz' ? 10 : -2
-    const maxZoom = georef.type === 'kmz' ? 22 : 4
+    const isGeographicCRS = crs === L.CRS.EPSG3857
+    const minZoom = isGeographicCRS ? 10 : -2
+    const maxZoom = isGeographicCRS ? 22 : 4
 
     // Initialize map
     const map = L.map(mapContainer.current, {
