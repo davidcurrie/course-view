@@ -21,12 +21,19 @@ export function CourseLayer({ map, courses, useProjectedCoords }: CourseLayerPro
       const newZoom = map.getZoom()
       setZoom(newZoom)
 
-      // Update line widths for all polylines
+      // Update line widths for all polylines, polygons, and circles
       const lineWidth = calculateLineWidth(newZoom)
       layersRef.current.forEach(layer => {
         layer.eachLayer((sublayer) => {
-          if (sublayer instanceof L.Polyline) {
+          if (sublayer instanceof L.Polyline || sublayer instanceof L.Polygon || sublayer instanceof L.Circle) {
             sublayer.setStyle({ weight: lineWidth })
+          } else if (sublayer instanceof L.LayerGroup) {
+            // Handle nested layer groups (start/finish markers)
+            sublayer.eachLayer((nestedLayer) => {
+              if (nestedLayer instanceof L.Polygon || nestedLayer instanceof L.Circle) {
+                nestedLayer.setStyle({ weight: lineWidth })
+              }
+            })
           }
         })
       })

@@ -70,29 +70,54 @@ export function extractUniqueControls(courses: Course[]): UniqueControl[] {
 }
 
 /**
- * Create a start marker (triangle) - always purple
+ * Create a start marker (equilateral triangle) - always purple
+ * Side length: 6mm at 1:15,000 = 90m on ground
  */
 export function createStartMarker(
   position: Position,
   courseName: string,
-  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
-): L.Marker {
-  const icon = L.divIcon({
-    className: 'orienteering-start-marker',
-    html: `
-      <svg width="30" height="30" viewBox="0 0 30 30">
-        <polygon points="15,5 25,25 5,25" fill="none" stroke="#9333ea" stroke-width="3"/>
-      </svg>
-    `,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-  })
-
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15
+): L.LayerGroup {
   const coords = transform(position)
-  const marker = L.marker(coords, { icon })
+  const layerGroup = L.layerGroup()
 
-  // Add popup
-  marker.bindPopup(`
+  // Side length: 6mm at 1:15,000 = 90m
+  const sideLength = 90 // meters
+  const height = (Math.sqrt(3) / 2) * sideLength // ~77.94m
+
+  // Calculate triangle vertices (equilateral, pointing up)
+  const lat = position.lat
+  const metersPerDegreeLat = 111320
+  const metersPerDegreeLng = 111320 * Math.cos(lat * Math.PI / 180)
+
+  // Top vertex (center top)
+  const topLat = coords[0] + (2 * height / 3) / metersPerDegreeLat
+  const topLng = coords[1]
+
+  // Bottom left vertex
+  const bottomLat = coords[0] - (height / 3) / metersPerDegreeLat
+  const bottomLeftLng = coords[1] - (sideLength / 2) / metersPerDegreeLng
+
+  // Bottom right vertex
+  const bottomRightLng = coords[1] + (sideLength / 2) / metersPerDegreeLng
+
+  const trianglePoints: L.LatLngExpression[] = [
+    [topLat, topLng],
+    [bottomLat, bottomRightLng],
+    [bottomLat, bottomLeftLng]
+  ]
+
+  const triangle = L.polygon(trianglePoints, {
+    fillColor: 'transparent',
+    fillOpacity: 0,
+    color: '#9333ea',
+    weight: calculateLineWidth(zoom),
+  })
+  triangle.addTo(layerGroup)
+
+  // Add popup to triangle
+  triangle.bindPopup(`
     <div style="font-family: Arial, sans-serif; min-width: 120px;">
       <div style="font-weight: bold; margin-bottom: 4px;">Start</div>
       <div style="font-size: 12px; color: #666;">Course: ${courseName}</div>
@@ -102,7 +127,7 @@ export function createStartMarker(
     minWidth: 120,
   })
 
-  return marker
+  return layerGroup
 }
 
 /**
@@ -155,29 +180,40 @@ export function createControlMarker(
 
 /**
  * Create a finish marker (double circle) - always purple
+ * Outer circle: 6mm at 1:15,000 = 90m diameter (45m radius)
+ * Inner circle: 4mm at 1:15,000 = 60m diameter (30m radius)
  */
 export function createFinishMarker(
   position: Position,
   courseName: string,
-  transform: CoordinateTransform = pos => [pos.lat, pos.lng]
-): L.Marker {
-  const icon = L.divIcon({
-    className: 'orienteering-finish-marker',
-    html: `
-      <svg width="30" height="30" viewBox="0 0 30 30">
-        <circle cx="15" cy="15" r="10" fill="none" stroke="#9333ea" stroke-width="3"/>
-        <circle cx="15" cy="15" r="6" fill="none" stroke="#9333ea" stroke-width="3"/>
-      </svg>
-    `,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-  })
-
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15
+): L.LayerGroup {
   const coords = transform(position)
-  const marker = L.marker(coords, { icon })
+  const layerGroup = L.layerGroup()
 
-  // Add popup
-  marker.bindPopup(`
+  // Outer circle: 6mm at 1:15,000 = 90m diameter (45m radius)
+  const outerCircle = L.circle(coords, {
+    radius: 45,
+    fillColor: 'transparent',
+    fillOpacity: 0,
+    color: '#9333ea',
+    weight: calculateLineWidth(zoom),
+  })
+  outerCircle.addTo(layerGroup)
+
+  // Inner circle: 4mm at 1:15,000 = 60m diameter (30m radius)
+  const innerCircle = L.circle(coords, {
+    radius: 30,
+    fillColor: 'transparent',
+    fillOpacity: 0,
+    color: '#9333ea',
+    weight: calculateLineWidth(zoom),
+  })
+  innerCircle.addTo(layerGroup)
+
+  // Add popup to outer circle
+  outerCircle.bindPopup(`
     <div style="font-family: Arial, sans-serif; min-width: 120px;">
       <div style="font-weight: bold; margin-bottom: 4px;">Finish</div>
       <div style="font-size: 12px; color: #666;">Course: ${courseName}</div>
@@ -187,7 +223,7 @@ export function createFinishMarker(
     minWidth: 120,
   })
 
-  return marker
+  return layerGroup
 }
 
 /**
@@ -245,8 +281,8 @@ function getFinishEdgePoint(
   finish: Position,
   transform: CoordinateTransform
 ): [number, number] {
-  // Finish marker has ~10m radius (approximation)
-  return getCircleEdgePoint(lastControl, finish, 10, transform)
+  // Finish outer circle has 45m radius (6mm at 1:15,000)
+  return getCircleEdgePoint(lastControl, finish, 45, transform)
 }
 
 /**
@@ -348,11 +384,11 @@ export function createCourseLayer(
   polylines.forEach(polyline => polyline.addTo(layerGroup))
 
   // Add start marker
-  const startMarker = createStartMarker(course.start, course.name, transform)
+  const startMarker = createStartMarker(course.start, course.name, transform, zoom)
   startMarker.addTo(layerGroup)
 
   // Add finish marker
-  const finishMarker = createFinishMarker(course.finish, course.name, transform)
+  const finishMarker = createFinishMarker(course.finish, course.name, transform, zoom)
   finishMarker.addTo(layerGroup)
 
   return layerGroup
