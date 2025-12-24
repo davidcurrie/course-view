@@ -16,7 +16,7 @@ export function createStartMarker(
     className: 'orienteering-start-marker',
     html: `
       <svg width="30" height="30" viewBox="0 0 30 30">
-        <polygon points="15,5 25,25 5,25" fill="${color}" stroke="white" stroke-width="2"/>
+        <polygon points="15,5 25,25 5,25" fill="none" stroke="${color}" stroke-width="3"/>
       </svg>
     `,
     iconSize: [30, 30],
@@ -54,7 +54,7 @@ export function createControlMarker(
     className: 'orienteering-control-marker',
     html: `
       <svg width="40" height="40" viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="12" fill="white" stroke="${color}" stroke-width="3"/>
+        <circle cx="20" cy="20" r="12" fill="none" stroke="${color}" stroke-width="3"/>
         <text x="20" y="20" text-anchor="middle" dominant-baseline="central"
               font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="${color}">
           ${control.number}
@@ -123,16 +123,54 @@ export function createFinishMarker(
 }
 
 /**
+ * Calculate point at edge of finish circle
+ */
+function getFinishEdgePoint(
+  lastControl: Position,
+  finish: Position,
+  transform: CoordinateTransform
+): [number, number] {
+  const lastControlCoords = transform(lastControl)
+  const finishCoords = transform(finish)
+
+  // Calculate direction vector from last control to finish
+  const dx = finishCoords[1] - lastControlCoords[1] // X difference
+  const dy = finishCoords[0] - lastControlCoords[0] // Y difference
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  if (distance === 0) return finishCoords
+
+  // Normalize direction vector
+  const dirX = dx / distance
+  const dirY = dy / distance
+
+  // Move back from finish center by outer circle radius (10 pixels in map units)
+  // This is an approximation - ideally we'd use actual map scale
+  const radius = 0.00015 // Approximate radius in map degrees (adjust as needed)
+
+  return [
+    finishCoords[0] - dirY * radius,
+    finishCoords[1] - dirX * radius
+  ]
+}
+
+/**
  * Create a polyline connecting course controls
  */
 export function createCoursePolyline(
   course: Course,
   transform: CoordinateTransform = pos => [pos.lat, pos.lng]
 ): L.Polyline {
+  // Get the finish edge point instead of center
+  const lastControl = course.controls[course.controls.length - 1]
+  const finishEdge = lastControl
+    ? getFinishEdgePoint(lastControl.position, course.finish, transform)
+    : transform(course.finish)
+
   const positions: L.LatLngExpression[] = [
     transform(course.start),
     ...course.controls.map(c => transform(c.position)),
-    transform(course.finish),
+    finishEdge,
   ]
 
   return L.polyline(positions, {
