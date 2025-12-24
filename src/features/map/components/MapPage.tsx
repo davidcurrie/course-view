@@ -135,16 +135,12 @@ export function MapPage() {
           onMapReady={setMap}
         />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 1000 }}>
-          <div style={{ pointerEvents: 'auto' }}>
-            <CourseSelector
-              courses={courses}
-              onToggleCourse={handleToggleCourse}
-              onToggleAll={handleToggleAll}
-            />
-          </div>
-          <div style={{ pointerEvents: 'auto' }}>
-            <ZoomControls map={map} />
-          </div>
+          <CourseSelector
+            courses={courses}
+            onToggleCourse={handleToggleCourse}
+            onToggleAll={handleToggleAll}
+          />
+          <ZoomControls map={map} />
         </div>
         <ControlsLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
         <CourseLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
