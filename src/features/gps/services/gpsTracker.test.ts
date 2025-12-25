@@ -7,13 +7,17 @@ describe('GPSTracker', () => {
   beforeEach(() => {
     tracker = new GPSTracker()
     // Mock geolocation API
-    global.navigator = {
-      geolocation: {
-        watchPosition: vi.fn(),
-        clearWatch: vi.fn(),
-        getCurrentPosition: vi.fn(),
+    Object.defineProperty(window, 'navigator', {
+      value: {
+        geolocation: {
+          watchPosition: vi.fn(),
+          clearWatch: vi.fn(),
+          getCurrentPosition: vi.fn(),
+        },
       },
-    } as any
+      writable: true,
+      configurable: true,
+    })
   })
 
   describe('start', () => {
