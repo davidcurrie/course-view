@@ -62,8 +62,16 @@ export function EventCard({ event, onDelete }: EventCardProps) {
     try {
       setIsSharing(true)
 
+      console.log('Starting export for event:', event.id)
+
       // Package event into files
       const files = await packageEventForSharing(event.id)
+      console.log('Files packaged successfully:', {
+        manifest: files.manifest.name,
+        mapImage: files.mapImage.name,
+        worldFile: files.worldFile?.name,
+        courseFile: files.courseFile.name
+      })
 
       // Download each file individually (browser support is universal)
       const filesToDownload = [
@@ -73,14 +81,20 @@ export function EventCard({ event, onDelete }: EventCardProps) {
         files.courseFile
       ]
 
+      console.log(`Downloading ${filesToDownload.length} files...`)
+
       // Download files sequentially with small delay
       for (let i = 0; i < filesToDownload.length; i++) {
         const file = filesToDownload[i]
+        console.log(`Downloading file ${i + 1}/${filesToDownload.length}: ${file.name}`)
+
         const url = URL.createObjectURL(file)
         const a = document.createElement('a')
         a.href = url
         a.download = file.name
+        document.body.appendChild(a)
         a.click()
+        document.body.removeChild(a)
         URL.revokeObjectURL(url)
 
         // Small delay between downloads to avoid browser blocking
@@ -88,6 +102,8 @@ export function EventCard({ event, onDelete }: EventCardProps) {
           await new Promise(resolve => setTimeout(resolve, 100))
         }
       }
+
+      console.log('All files downloaded successfully')
 
       alert(
         `✅ Event files downloaded!\n\n` +
@@ -98,9 +114,18 @@ export function EventCard({ event, onDelete }: EventCardProps) {
         `- ${files.courseFile.name}\n\n` +
         `Share these files with others. Recipients should use "Import Event" to add them to their app.`
       )
-    } catch (error) {
+    } catch (error: any) {
       console.error('Export failed:', error)
-      alert('Failed to export event files. Please try again.')
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack
+      })
+      alert(
+        `Failed to export event files.\n\n` +
+        `Error: ${error?.message || 'Unknown error'}\n\n` +
+        `Please check the browser console (F12) for details.`
+      )
     } finally {
       setIsSharing(false)
     }
