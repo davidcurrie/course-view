@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Event } from '../../../shared/types'
+import { canUseWebShare, shareEvent, packageEventForSharing } from '../../events/services/eventSharer'
 
 interface EventCardProps {
   event: Event
@@ -12,7 +13,7 @@ interface EventCardProps {
  */
 export function EventCard({ event, onDelete }: EventCardProps) {
   const navigate = useNavigate()
-  const [copied, setCopied] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
 
   const handleView = () => {
     navigate(`/map/${event.id}`)
@@ -27,31 +28,78 @@ export function EventCard({ event, onDelete }: EventCardProps) {
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    const url = `${window.location.origin}/map/${event.id}`
+
+    // Try Web Share API first (mobile iOS/Android)
+    if (canUseWebShare()) {
+      try {
+        setIsSharing(true)
+        await shareEvent(event.id)
+        // Successfully shared via native dialog
+        console.log('Event shared successfully via Web Share API')
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          // User cancelled share dialog - not an error
+          console.log('User cancelled share')
+        } else {
+          console.error('Share failed:', error)
+          alert('Failed to share event. Please try the export option instead.')
+        }
+      } finally {
+        setIsSharing(false)
+      }
+    } else {
+      // Fallback: Export files for manual sharing
+      await handleExport(e)
+    }
+  }
+
+  const handleExport = async (e: React.MouseEvent) => {
+    e.stopPropagation()
 
     try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setIsSharing(true)
 
-      // Show informative alert about sharing limitation
+      // Package event into files
+      const files = await packageEventForSharing(event.id)
+
+      // Download each file individually (browser support is universal)
+      const filesToDownload = [
+        files.manifest,
+        files.mapImage,
+        ...(files.worldFile ? [files.worldFile] : []),
+        files.courseFile
+      ]
+
+      // Download files sequentially with small delay
+      for (let i = 0; i < filesToDownload.length; i++) {
+        const file = filesToDownload[i]
+        const url = URL.createObjectURL(file)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = file.name
+        a.click()
+        URL.revokeObjectURL(url)
+
+        // Small delay between downloads to avoid browser blocking
+        if (i < filesToDownload.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+      }
+
       alert(
-        `URL copied to clipboard!\n\n` +
-        `⚠️ IMPORTANT: This URL does NOT transfer event data.\n\n` +
-        `Recipients must:\n` +
-        `1. Upload the same map files to their device\n` +
-        `2. Upload the same course file\n` +
-        `3. Then this URL will open their local copy\n\n` +
-        `All data is stored locally for offline functionality.`
+        `✅ Event files downloaded!\n\n` +
+        `Downloaded ${filesToDownload.length} files:\n` +
+        `- ${files.manifest.name}\n` +
+        `- ${files.mapImage.name}\n` +
+        `${files.worldFile ? `- ${files.worldFile.name}\n` : ''}` +
+        `- ${files.courseFile.name}\n\n` +
+        `Share these files with others. Recipients should use "Import Event" to add them to their app.`
       )
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error)
-      // Fallback: show the URL in an alert
-      alert(
-        `Share this URL:\n${url}\n\n` +
-        `⚠️ IMPORTANT: Recipients must upload the same files to their device first. ` +
-        `The URL does not transfer event data.`
-      )
+      console.error('Export failed:', error)
+      alert('Failed to export event files. Please try again.')
+    } finally {
+      setIsSharing(false)
     }
   }
 
@@ -100,9 +148,10 @@ export function EventCard({ event, onDelete }: EventCardProps) {
           </button>
           <button
             onClick={handleShare}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium"
+            disabled={isSharing}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {copied ? '✓ Copied!' : 'Share'}
+            {isSharing ? 'Preparing...' : canUseWebShare() ? 'Share' : 'Export'}
           </button>
           {!event.isDemo && (
             <button

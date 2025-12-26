@@ -8,7 +8,7 @@
  */
 
 import { db } from '../../../db/schema'
-import type { Event, Course } from '../../../shared/types'
+import type { Event } from '../../../shared/types'
 
 interface ShareableEventPackage {
   manifest: File
@@ -259,7 +259,7 @@ function generateIOFXML(event: Event): string {
  * Fallback: Export event as ZIP file download
  * For browsers that don't support Web Share API
  */
-export async function exportEventAsZip(eventId: string): Promise<void> {
+export async function exportEventAsZip(_eventId: string): Promise<void> {
   // This would require adding JSZip library
   // For now, we'll just provide individual file downloads
   throw new Error('ZIP export not yet implemented - use Web Share API or share URL instead')

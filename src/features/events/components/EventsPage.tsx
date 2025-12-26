@@ -125,13 +125,19 @@ export function EventsPage() {
           </div>
         )}
 
-        {/* Upload button */}
-        <div className="mb-6">
+        {/* Action buttons */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => navigate('/upload')}
-            className="w-full md:w-auto px-6 py-3 bg-forest-600 text-white rounded-lg hover:bg-forest-700 transition-colors font-medium"
+            className="px-6 py-3 bg-forest-600 text-white rounded-lg hover:bg-forest-700 transition-colors font-medium"
           >
             + Upload New Event
+          </button>
+          <button
+            onClick={() => navigate('/events/import')}
+            className="px-6 py-3 bg-white border-2 border-forest-600 text-forest-700 rounded-lg hover:bg-forest-50 transition-colors font-medium"
+          >
+            📥 Import Shared Event
           </button>
         </div>
 
