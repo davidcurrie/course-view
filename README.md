@@ -104,11 +104,14 @@ The app will process your files and create a new event stored locally on your de
 ### Managing Events
 
 - **View all events**: Click "View Events" from home
-- **Share an event URL**: Click "Share" to copy the URL (Note: Recipient must upload the same files)
+- **Share an event**: Click "Share" (mobile) or "Export" (desktop) to send event files
+  - **Mobile (iOS/Android)**: Uses native share dialog - send via AirDrop, Messages, Email
+  - **Desktop/Firefox**: Downloads files for manual sharing
+- **Import shared event**: Click "Import Shared Event" and select received files
 - **Delete an event**: Click "Delete" (with confirmation)
 - **Storage usage**: Shown at the top of the events page
 
-**Important:** Event data is stored locally on your device. "Sharing" a URL only works if the recipient has uploaded the same map and course files to their own device.
+**How Sharing Works:** When you share an event, the app packages it into 3-4 files (manifest.json, map.jpg, map.jgw, courses.xml) that recipients can import into their own Forest Team app. This ensures recipients get all the data they need.
 
 ## Development
 
@@ -392,10 +395,8 @@ For issues, questions, or suggestions:
 - [ ] Export to PDF
 - [ ] Live event tracking
 - [ ] Course statistics
-- [ ] True event sharing (via backend or file export)
 
 ### Known Limitations
-- **Sharing limitation**: "Share" only copies a URL - recipients must upload the same files separately (no data transfer)
 - Projected coordinates require .prj file
 - GPS accuracy varies (5-10m typical, can be >50m in dense forest)
 - Map files limited by browser storage (~100MB+)
