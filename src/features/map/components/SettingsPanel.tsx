@@ -71,7 +71,7 @@ export function SettingsPanel({
           {/* Panel */}
           <div
             className="fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl z-50 overflow-y-auto"
-            style={{ pointerEvents: 'auto' }}
+            style={{ pointerEvents: 'auto', backgroundColor: 'white', opacity: 1 }}
           >
             {/* Header */}
             <div className="sticky top-0 bg-forest-700 text-white p-4 flex items-center justify-between">
@@ -149,13 +149,21 @@ export function SettingsPanel({
                 </div>
               </section>
 
-              {/* Visit Tracking Section - only show when GPS is active */}
-              {isGPSTracking && (
-                <section>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                    Visit Tracking
-                  </h3>
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+              {/* Visit Tracking Section */}
+              <section>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  Visit Tracking
+                </h3>
+                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+                  {!isGPSTracking && (
+                    <div className="p-3 rounded bg-yellow-50 border border-yellow-200">
+                      <p className="text-sm text-yellow-800">
+                        Enable GPS tracking to use visit tracking features
+                      </p>
+                    </div>
+                  )}
+                  {isGPSTracking && (
+                    <>
                     {/* Enable/Disable Status */}
                     <div className="p-3 rounded" style={{ backgroundColor: isTrackingEnabled ? '#dcfce7' : '#f3f4f6' }}>
                       <div className="flex items-center justify-between mb-2">
@@ -222,9 +230,10 @@ export function SettingsPanel({
                         Reset
                       </button>
                     </div>
-                  </div>
-                </section>
-              )}
+                    </>
+                  )}
+                </div>
+              </section>
             </div>
           </div>
         </>
