@@ -48,14 +48,15 @@ export function SettingsPanel({
       {/* Settings Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white rounded-lg shadow-lg p-3 hover:bg-gray-50 transition-colors"
+        className="bg-white rounded-lg shadow-lg px-4 py-2 hover:bg-gray-50 transition-colors flex items-center gap-2"
         style={{ backgroundColor: 'white', opacity: 1, pointerEvents: 'auto' }}
         aria-label="Settings"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="3" />
           <path d="M12 1v6m0 6v6m-7-9h6m6 0h6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
         </svg>
+        <span className="text-sm font-medium text-gray-700">Settings</span>
       </button>
 
       {/* Settings Modal */}
@@ -70,8 +71,8 @@ export function SettingsPanel({
 
           {/* Panel */}
           <div
-            className="fixed inset-y-0 left-0 w-full sm:w-96 bg-white shadow-xl z-50 overflow-y-auto"
-            style={{ pointerEvents: 'auto', backgroundColor: 'white', opacity: 1 }}
+            className="fixed inset-y-0 left-0 w-full sm:max-w-sm bg-white shadow-xl z-50 overflow-y-auto"
+            style={{ pointerEvents: 'auto', backgroundColor: 'white', opacity: 1, maxWidth: '100vw' }}
           >
             {/* Header */}
             <div className="sticky top-0 bg-forest-700 text-white p-4 flex items-center justify-between">
@@ -156,82 +157,80 @@ export function SettingsPanel({
                 </h3>
                 <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
                   {!isGPSTracking && (
-                    <div className="p-3 rounded bg-yellow-50 border border-yellow-200">
+                    <div className="p-3 rounded bg-yellow-50 border border-yellow-200 mb-4">
                       <p className="text-sm text-yellow-800">
                         Enable GPS tracking to use visit tracking features
                       </p>
                     </div>
                   )}
-                  {isGPSTracking && (
-                    <>
-                    {/* Enable/Disable Status */}
-                    <div className="p-3 rounded" style={{ backgroundColor: isTrackingEnabled ? '#dcfce7' : '#f3f4f6' }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: isTrackingEnabled ? '#22c55e' : '#9ca3af' }}
-                          />
-                          <span className="text-sm font-medium" style={{ color: isTrackingEnabled ? '#166534' : '#6b7280' }}>
-                            {isTrackingEnabled ? 'Tracking Active' : 'Tracking Paused'}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => setTrackingEnabled(!isTrackingEnabled)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            isTrackingEnabled ? 'bg-green-600' : 'bg-gray-300'
-                          }`}
-                          aria-label="Toggle visit tracking"
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              isTrackingEnabled ? 'translate-x-6' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
+
+                  {/* Enable/Disable Status */}
+                  <div className="p-3 rounded" style={{ backgroundColor: isTrackingEnabled && isGPSTracking ? '#dcfce7' : '#f3f4f6' }}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: isTrackingEnabled && isGPSTracking ? '#22c55e' : '#9ca3af' }}
+                        />
+                        <span className="text-sm font-medium" style={{ color: isTrackingEnabled && isGPSTracking ? '#166534' : '#6b7280' }}>
+                          {isTrackingEnabled && isGPSTracking ? 'Tracking Active' : 'Tracking Paused'}
+                        </span>
                       </div>
-                      {!isTrackingEnabled && (
-                        <p className="text-xs text-gray-600 mt-1">
-                          Enable to mark controls as visited
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Distance Threshold */}
-                    <div>
-                      <label htmlFor="visit-distance" className="text-sm text-gray-600 block mb-2">
-                        Visit distance
-                      </label>
-                      <select
-                        id="visit-distance"
-                        value={visitDistanceThreshold}
-                        onChange={(e) => setVisitDistanceThreshold(Number(e.target.value))}
-                        disabled={!isTrackingEnabled}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-forest-500 disabled:bg-gray-100 disabled:text-gray-400"
-                      >
-                        {distanceOptions.map((distance) => (
-                          <option key={distance} value={distance}>
-                            {distance}m
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Visited Count & Reset */}
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                      <span className="text-sm text-gray-600">
-                        Visited: <span className="font-semibold text-green-600">{visitedControls.size}</span>
-                      </span>
                       <button
-                        onClick={handleReset}
-                        disabled={visitedControls.size === 0}
-                        className="px-4 py-2 text-sm font-medium text-white bg-forest-600 rounded hover:bg-forest-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => setTrackingEnabled(!isTrackingEnabled)}
+                        disabled={!isGPSTracking}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          isTrackingEnabled && isGPSTracking ? 'bg-green-600' : 'bg-gray-300'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        aria-label="Toggle visit tracking"
                       >
-                        Reset
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            isTrackingEnabled && isGPSTracking ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
                       </button>
                     </div>
-                    </>
-                  )}
+                    {!isTrackingEnabled && isGPSTracking && (
+                      <p className="text-xs text-gray-600 mt-1">
+                        Enable to mark controls as visited
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Distance Threshold */}
+                  <div>
+                    <label htmlFor="visit-distance" className="text-sm text-gray-600 block mb-2">
+                      Visit distance
+                    </label>
+                    <select
+                      id="visit-distance"
+                      value={visitDistanceThreshold}
+                      onChange={(e) => setVisitDistanceThreshold(Number(e.target.value))}
+                      disabled={!isTrackingEnabled || !isGPSTracking}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-forest-500 disabled:bg-gray-100 disabled:text-gray-400"
+                    >
+                      {distanceOptions.map((distance) => (
+                        <option key={distance} value={distance}>
+                          {distance}m
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Visited Count & Reset */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                    <span className="text-sm text-gray-600">
+                      Visited: <span className="font-semibold text-green-600">{visitedControls.size}</span>
+                    </span>
+                    <button
+                      onClick={handleReset}
+                      disabled={visitedControls.size === 0 || !isGPSTracking}
+                      className="px-4 py-2 text-sm font-medium text-white bg-forest-600 rounded hover:bg-forest-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Reset
+                    </button>
+                  </div>
                 </div>
               </section>
             </div>
