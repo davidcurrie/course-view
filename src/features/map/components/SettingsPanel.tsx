@@ -74,17 +74,27 @@ export function SettingsPanel({
 
           {/* Panel */}
           <div
-            className="fixed inset-y-0 left-0 bg-white shadow-xl z-50 flex flex-col"
+            className="fixed inset-y-0 left-0 bg-white shadow-xl z-50"
             style={{
               pointerEvents: 'auto',
               backgroundColor: 'white',
               opacity: 1,
               width: '100%',
               maxWidth: '384px',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-forest-700 text-white p-4 flex items-center justify-between">
+            {/* Header - Fixed at top */}
+            <div
+              className="bg-forest-700 text-white p-4"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexShrink: 0,
+              }}
+            >
               <h2 className="text-lg font-semibold">Settings</h2>
               <button
                 onClick={() => setIsOpen(false)}
@@ -97,8 +107,15 @@ export function SettingsPanel({
               </button>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Content - Scrollable */}
+            <div
+              className="p-4 space-y-6"
+              style={{
+                flex: '1 1 auto',
+                overflowY: 'auto',
+                minHeight: 0,
+              }}
+            >
               {/* Course Selection Section */}
               <section>
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
