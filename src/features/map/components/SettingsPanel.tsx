@@ -48,8 +48,7 @@ export function SettingsPanel({
       {/* Settings Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-forest-600 text-white rounded-lg shadow-lg px-3 py-2 hover:bg-forest-700 transition-colors"
-        style={{ opacity: 1, pointerEvents: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        className="bg-forest-600 text-white rounded-lg shadow-lg px-3 py-2 hover:bg-forest-700 transition-colors flex items-center gap-2"
         aria-label="Open settings"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -59,7 +58,7 @@ export function SettingsPanel({
           <path d="M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24" />
           <path d="M18.36 5.64l-4.24 4.24m-4.24 4.24l-4.24 4.24" />
         </svg>
-        <span style={{ fontSize: '14px', fontWeight: '500' }}>Settings</span>
+        <span className="text-sm font-medium">Settings</span>
       </button>
 
       {/* Settings Modal */}
@@ -67,38 +66,39 @@ export function SettingsPanel({
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsOpen(false)}
-            style={{ pointerEvents: 'auto' }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 999,
+            }}
           />
 
-          {/* Panel */}
+          {/* Settings Panel - Completely scrollable */}
           <div
-            className="fixed inset-y-0 left-0 bg-white shadow-xl z-50"
             style={{
-              pointerEvents: 'auto',
-              backgroundColor: 'white',
-              opacity: 1,
+              position: 'fixed',
+              top: 0,
+              left: 0,
               width: '100%',
               maxWidth: '384px',
-              display: 'flex',
-              flexDirection: 'column',
+              height: '100%',
+              backgroundColor: 'white',
+              zIndex: 1000,
+              overflowY: 'scroll',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
-            {/* Header - Fixed at top */}
-            <div
-              className="bg-forest-700 text-white p-4"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexShrink: 0,
-              }}
-            >
-              <h2 className="text-lg font-semibold">Settings</h2>
+            {/* Header */}
+            <div style={{ backgroundColor: '#15803d', color: 'white', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Settings</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-forest-600 rounded"
+                style={{ padding: '0.5rem', borderRadius: '0.25rem', backgroundColor: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}
                 aria-label="Close settings"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -107,38 +107,170 @@ export function SettingsPanel({
               </button>
             </div>
 
-            {/* Content - Scrollable */}
-            <div
-              className="p-4 space-y-6"
-              style={{
-                flex: '1 1 auto',
-                overflowY: 'auto',
-                minHeight: 0,
-                WebkitOverflowScrolling: 'touch',
-                overscrollBehavior: 'contain',
-              }}
-              onWheel={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
-            >
+            {/* Content */}
+            <div style={{ padding: '1rem' }}>
+              {/* Visit Tracking Section */}
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+                  Visit Tracking
+                </h3>
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', border: '1px solid #e5e7eb', padding: '1rem' }}>
+                  {!isGPSTracking && (
+                    <div style={{ padding: '0.75rem', borderRadius: '0.25rem', backgroundColor: '#fef3c7', border: '1px solid #fcd34d', marginBottom: '1rem' }}>
+                      <p style={{ fontSize: '0.875rem', color: '#92400e' }}>
+                        Enable GPS tracking to use visit tracking features
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Enable/Disable Toggle */}
+                  <div style={{ padding: '0.75rem', borderRadius: '0.25rem', backgroundColor: isTrackingEnabled && isGPSTracking ? '#dcfce7' : '#f3f4f6', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div
+                          style={{
+                            width: '0.5rem',
+                            height: '0.5rem',
+                            borderRadius: '9999px',
+                            backgroundColor: isTrackingEnabled && isGPSTracking ? '#22c55e' : '#9ca3af'
+                          }}
+                        />
+                        <span style={{ fontSize: '0.875rem', fontWeight: 500, color: isTrackingEnabled && isGPSTracking ? '#166534' : '#6b7280' }}>
+                          {isTrackingEnabled && isGPSTracking ? 'Tracking Active' : 'Tracking Paused'}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setTrackingEnabled(!isTrackingEnabled)}
+                        disabled={!isGPSTracking}
+                        style={{
+                          position: 'relative',
+                          display: 'inline-flex',
+                          height: '1.5rem',
+                          width: '2.75rem',
+                          alignItems: 'center',
+                          borderRadius: '9999px',
+                          backgroundColor: isTrackingEnabled && isGPSTracking ? '#16a34a' : '#d1d5db',
+                          border: 'none',
+                          cursor: isGPSTracking ? 'pointer' : 'not-allowed',
+                          opacity: isGPSTracking ? 1 : 0.5,
+                          transition: 'background-color 0.2s',
+                        }}
+                        aria-label="Toggle visit tracking"
+                      >
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            height: '1rem',
+                            width: '1rem',
+                            transform: isTrackingEnabled && isGPSTracking ? 'translateX(1.5rem)' : 'translateX(0.25rem)',
+                            borderRadius: '9999px',
+                            backgroundColor: 'white',
+                            transition: 'transform 0.2s',
+                          }}
+                        />
+                      </button>
+                    </div>
+                    {!isTrackingEnabled && isGPSTracking && (
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                        Enable to mark controls as visited
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Distance Threshold */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="visit-distance" style={{ fontSize: '0.875rem', color: '#6b7280', display: 'block', marginBottom: '0.5rem' }}>
+                      Visit distance
+                    </label>
+                    <select
+                      id="visit-distance"
+                      value={visitDistanceThreshold}
+                      onChange={(e) => setVisitDistanceThreshold(Number(e.target.value))}
+                      disabled={!isTrackingEnabled || !isGPSTracking}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.875rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '0.25rem',
+                        backgroundColor: (!isTrackingEnabled || !isGPSTracking) ? '#f3f4f6' : 'white',
+                        color: (!isTrackingEnabled || !isGPSTracking) ? '#9ca3af' : 'inherit',
+                        cursor: (!isTrackingEnabled || !isGPSTracking) ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {distanceOptions.map((distance) => (
+                        <option key={distance} value={distance}>
+                          {distance}m
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Visited Count & Reset */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem', borderTop: '1px solid #e5e7eb' }}>
+                    <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                      Visited: <span style={{ fontWeight: 600, color: '#22c55e' }}>{visitedControls.size}</span>
+                    </span>
+                    <button
+                      onClick={handleReset}
+                      disabled={visitedControls.size === 0 || !isGPSTracking}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        color: 'white',
+                        backgroundColor: (visitedControls.size === 0 || !isGPSTracking) ? '#d1d5db' : '#15803d',
+                        border: 'none',
+                        borderRadius: '0.25rem',
+                        cursor: (visitedControls.size === 0 || !isGPSTracking) ? 'not-allowed' : 'pointer',
+                        transition: 'background-color 0.2s',
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Course Selection Section */}
-              <section>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
                   Courses
                 </h3>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', border: '1px solid #e5e7eb', padding: '1rem' }}>
                   {/* Show/Hide All Buttons */}
-                  <div className="flex gap-2 mb-4">
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                     <button
                       onClick={() => onToggleAll(true)}
                       disabled={allVisible}
-                      className="flex-1 px-3 py-2 text-sm bg-forest-600 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-forest-700"
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.875rem',
+                        backgroundColor: allVisible ? '#9ca3af' : '#15803d',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '0.25rem',
+                        cursor: allVisible ? 'not-allowed' : 'pointer',
+                        opacity: allVisible ? 0.5 : 1,
+                      }}
                     >
                       Show All
                     </button>
                     <button
                       onClick={() => onToggleAll(false)}
                       disabled={!someVisible}
-                      className="flex-1 px-3 py-2 text-sm bg-gray-600 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.875rem',
+                        backgroundColor: !someVisible ? '#9ca3af' : '#4b5563',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '0.25rem',
+                        cursor: !someVisible ? 'not-allowed' : 'pointer',
+                        opacity: !someVisible ? 0.5 : 1,
+                      }}
                     >
                       Hide All
                     </button>
@@ -146,20 +278,29 @@ export function SettingsPanel({
 
                   {/* Course List */}
                   {courses.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-4">No courses available</p>
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', textAlign: 'center', padding: '1rem 0' }}>No courses available</p>
                   ) : (
-                    <div className="space-y-1">
+                    <div>
                       {courses.map(course => (
                         <label
                           key={course.id}
-                          className="flex items-center gap-3 py-2 px-3 rounded hover:bg-gray-50 cursor-pointer"
-                          style={{ minHeight: '44px' }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            padding: '0.5rem 0.75rem',
+                            borderRadius: '0.25rem',
+                            cursor: 'pointer',
+                            minHeight: '44px',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <input
                             type="checkbox"
                             checked={course.visible}
                             onChange={() => onToggleCourse(course.id)}
-                            className="w-5 h-5 rounded border-gray-300 text-forest-600 focus:ring-forest-500"
+                            style={{ width: '1.25rem', height: '1.25rem', cursor: 'pointer' }}
                           />
                           <div
                             style={{
@@ -172,97 +313,13 @@ export function SettingsPanel({
                             }}
                             aria-label={`Course color: ${course.color}`}
                           />
-                          <span className="text-sm flex-1">{course.name}</span>
+                          <span style={{ fontSize: '0.875rem', flex: 1 }}>{course.name}</span>
                         </label>
                       ))}
                     </div>
                   )}
                 </div>
-              </section>
-
-              {/* Visit Tracking Section */}
-              <section>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Visit Tracking
-                </h3>
-                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
-                  {!isGPSTracking && (
-                    <div className="p-3 rounded bg-yellow-50 border border-yellow-200 mb-4">
-                      <p className="text-sm text-yellow-800">
-                        Enable GPS tracking to use visit tracking features
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Enable/Disable Status */}
-                  <div className="p-3 rounded" style={{ backgroundColor: isTrackingEnabled && isGPSTracking ? '#dcfce7' : '#f3f4f6' }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: isTrackingEnabled && isGPSTracking ? '#22c55e' : '#9ca3af' }}
-                        />
-                        <span className="text-sm font-medium" style={{ color: isTrackingEnabled && isGPSTracking ? '#166534' : '#6b7280' }}>
-                          {isTrackingEnabled && isGPSTracking ? 'Tracking Active' : 'Tracking Paused'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => setTrackingEnabled(!isTrackingEnabled)}
-                        disabled={!isGPSTracking}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          isTrackingEnabled && isGPSTracking ? 'bg-green-600' : 'bg-gray-300'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        aria-label="Toggle visit tracking"
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            isTrackingEnabled && isGPSTracking ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    {!isTrackingEnabled && isGPSTracking && (
-                      <p className="text-xs text-gray-600 mt-1">
-                        Enable to mark controls as visited
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Distance Threshold */}
-                  <div>
-                    <label htmlFor="visit-distance" className="text-sm text-gray-600 block mb-2">
-                      Visit distance
-                    </label>
-                    <select
-                      id="visit-distance"
-                      value={visitDistanceThreshold}
-                      onChange={(e) => setVisitDistanceThreshold(Number(e.target.value))}
-                      disabled={!isTrackingEnabled || !isGPSTracking}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-forest-500 disabled:bg-gray-100 disabled:text-gray-400"
-                    >
-                      {distanceOptions.map((distance) => (
-                        <option key={distance} value={distance}>
-                          {distance}m
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Visited Count & Reset */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                    <span className="text-sm text-gray-600">
-                      Visited: <span className="font-semibold text-green-600">{visitedControls.size}</span>
-                    </span>
-                    <button
-                      onClick={handleReset}
-                      disabled={visitedControls.size === 0 || !isGPSTracking}
-                      className="px-4 py-2 text-sm font-medium text-white bg-forest-600 rounded hover:bg-forest-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              </section>
+              </div>
             </div>
           </div>
         </>
