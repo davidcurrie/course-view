@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
+import { Button } from './Button'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -70,33 +76,53 @@ export function InstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t-2 border-forest-600 shadow-lg">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 mb-1">
-              Install Forest Team
-            </h3>
-            <p className="text-sm text-gray-600">
-              Install this app on your device for quick access and offline use.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleInstallClick}
-              className="px-4 py-2 bg-forest-600 text-white rounded hover:bg-forest-700 transition-colors text-sm font-medium whitespace-nowrap"
-            >
-              Install
-            </button>
-            <button
-              onClick={handleDismiss}
-              className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium"
-            >
-              Not Now
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        p: 2,
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: 'md',
+          mx: 'auto',
+          borderTop: 3,
+          borderColor: 'primary.main',
+        }}
+      >
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h6" gutterBottom>
+                Install Forest Team
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Install this app on your device for quick access and offline use.
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={handleInstallClick}
+              >
+                Install
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={handleDismiss}
+              >
+                Not Now
+              </Button>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   )
 }
