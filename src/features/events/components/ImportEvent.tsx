@@ -1,5 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Stack from '@mui/material/Stack'
+import IconButton from '@mui/material/IconButton'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { db } from '../../../db/schema'
 import { processJpegWorldFile, type ParsedMapData } from '../../upload/services/mapProcessor'
 import { parseCourseData } from '../../upload/services/courseParser'
@@ -309,135 +323,186 @@ export function ImportEvent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-forest-800 text-white py-4 px-6">
-        <div className="container mx-auto max-w-4xl flex items-center gap-4">
-          <button
-            onClick={handleCancel}
-            className="px-3 py-2 hover:bg-forest-700 rounded"
-          >
-            ← Back
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold">Import Shared Event</h1>
-            <p className="text-sm text-forest-100">
-              Import an event that was shared with you
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="container mx-auto max-w-4xl p-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {/* Instructions */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">How to Import</h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700">
-              <li>Receive event files from the sender (via AirDrop, email, etc.)</li>
-              <li>Select all files below (3-4 files total)</li>
-              <li>Click "Import Event" to add it to your app</li>
-            </ol>
-          </div>
-
-          {/* File input */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Event Files
-            </label>
-            <input
-              type="file"
-              accept=".zip,.forestteam.zip"
-              onChange={handleFilesSelected}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-forest-50 file:text-forest-700 hover:file:bg-forest-100"
-            />
-            <p className="mt-2 text-sm text-gray-500">
-              Select a .forestteam.zip file exported from Forest Team
-            </p>
-          </div>
-
-          {/* Manifest preview */}
-          {manifest && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
-              <h3 className="font-medium text-blue-900 mb-2">Event Preview</h3>
-              <dl className="space-y-1 text-sm">
-                <div>
-                  <dt className="inline font-medium">Name:</dt>
-                  <dd className="inline ml-2">{manifest.eventName}</dd>
-                </div>
-                <div>
-                  <dt className="inline font-medium">Date:</dt>
-                  <dd className="inline ml-2">{new Date(manifest.eventDate).toLocaleDateString()}</dd>
-                </div>
-                <div>
-                  <dt className="inline font-medium">Courses:</dt>
-                  <dd className="inline ml-2">{manifest.courses.length}</dd>
-                </div>
-                <div>
-                  <dt className="inline font-medium">Exported:</dt>
-                  <dd className="inline ml-2">{new Date(manifest.exportedAt).toLocaleString()}</dd>
-                </div>
-              </dl>
-            </div>
-          )}
-
-          {/* Files selected */}
-          {selectedFiles && selectedFiles.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-2">
-                Selected Files ({selectedFiles.length})
-              </h3>
-              <ul className="space-y-1 text-sm text-gray-600">
-                {Array.from(selectedFiles).map((file, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="text-gray-400">•</span>
-                    <span className="font-mono">{file.name}</span>
-                    <span className="text-gray-400">
-                      ({(file.size / 1024).toFixed(1)} KB)
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Error message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              onClick={handleImport}
-              disabled={!selectedFiles || selectedFiles.length === 0 || importing}
-              className="flex-1"
-            >
-              {importing ? 'Importing...' : 'Import Event'}
-            </Button>
-            <Button
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Container maxWidth="md" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton
+              edge="start"
+              color="inherit"
               onClick={handleCancel}
-              variant="secondary"
-              disabled={importing}
+              sx={{ mr: 1 }}
             >
-              Cancel
-            </Button>
-          </div>
-        </div>
+              <ArrowBackIcon />
+            </IconButton>
+            <Box>
+              <Typography variant="h5" component="h1" fontWeight="bold">
+                Import Shared Event
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                Import an event that was shared with you
+              </Typography>
+            </Box>
+          </Container>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="md" sx={{ py: 3 }}>
+        <Card>
+          <CardContent sx={{ p: 3 }}>
+            <Stack spacing={3}>
+              {/* Instructions */}
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  How to Import
+                </Typography>
+                <List
+                  component="ol"
+                  sx={{
+                    listStyleType: 'decimal',
+                    pl: 3,
+                    '& .MuiListItem-root': {
+                      display: 'list-item',
+                    },
+                  }}
+                >
+                  <ListItem disablePadding>
+                    <Typography variant="body2" color="text.secondary">
+                      Receive event files from the sender (via AirDrop, email, etc.)
+                    </Typography>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <Typography variant="body2" color="text.secondary">
+                      Select all files below (3-4 files total)
+                    </Typography>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <Typography variant="body2" color="text.secondary">
+                      Click "Import Event" to add it to your app
+                    </Typography>
+                  </ListItem>
+                </List>
+              </Box>
+
+              {/* File input */}
+              <Box>
+                <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+                  Select Event Files
+                </Typography>
+                <Box
+                  component="input"
+                  type="file"
+                  accept=".zip,.forestteam.zip"
+                  onChange={handleFilesSelected}
+                  sx={{
+                    display: 'block',
+                    width: '100%',
+                    fontSize: '0.875rem',
+                    color: 'text.secondary',
+                    '&::file-selector-button': {
+                      mr: 2,
+                      py: 1,
+                      px: 2,
+                      border: 'none',
+                      borderRadius: 1,
+                      bgcolor: 'primary.50',
+                      color: 'primary.main',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        bgcolor: 'primary.100',
+                      },
+                    },
+                  }}
+                />
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                  Select a .forestteam.zip file exported from Forest Team
+                </Typography>
+              </Box>
+
+              {/* Manifest preview */}
+              {manifest && (
+                <Alert severity="info">
+                  <AlertTitle>Event Preview</AlertTitle>
+                  <Stack spacing={0.5} sx={{ mt: 1 }}>
+                    <Typography variant="body2">
+                      <Box component="span" fontWeight="medium">Name:</Box> {manifest.eventName}
+                    </Typography>
+                    <Typography variant="body2">
+                      <Box component="span" fontWeight="medium">Date:</Box>{' '}
+                      {new Date(manifest.eventDate).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body2">
+                      <Box component="span" fontWeight="medium">Courses:</Box> {manifest.courses.length}
+                    </Typography>
+                    <Typography variant="body2">
+                      <Box component="span" fontWeight="medium">Exported:</Box>{' '}
+                      {new Date(manifest.exportedAt).toLocaleString()}
+                    </Typography>
+                  </Stack>
+                </Alert>
+              )}
+
+              {/* Files selected */}
+              {selectedFiles && selectedFiles.length > 0 && (
+                <Box>
+                  <Typography variant="body2" fontWeight="medium" gutterBottom>
+                    Selected Files ({selectedFiles.length})
+                  </Typography>
+                  <List dense>
+                    {Array.from(selectedFiles).map((file, idx) => (
+                      <ListItem key={idx} disablePadding>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                          • {file.name}{' '}
+                          <Box component="span" sx={{ color: 'text.disabled' }}>
+                            ({(file.size / 1024).toFixed(1)} KB)
+                          </Box>
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
+
+              {/* Error message */}
+              {error && (
+                <Alert severity="error">
+                  <Typography variant="body2">{error}</Typography>
+                </Alert>
+              )}
+
+              {/* Actions */}
+              <Stack direction="row" spacing={2}>
+                <Button
+                  onClick={handleImport}
+                  disabled={!selectedFiles || selectedFiles.length === 0 || importing}
+                  sx={{ flex: 1 }}
+                >
+                  {importing ? 'Importing...' : 'Import Event'}
+                </Button>
+                <Button
+                  onClick={handleCancel}
+                  variant="secondary"
+                  disabled={importing}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
 
         {/* Help text */}
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-          <h3 className="font-medium text-yellow-900 mb-2">Need Help?</h3>
-          <p className="text-sm text-yellow-800">
+        <Alert severity="warning" sx={{ mt: 3 }}>
+          <AlertTitle>Need Help?</AlertTitle>
+          <Typography variant="body2">
             If you're having trouble importing, make sure you've selected all the files
             that were shared with you. The manifest.json file is required, along with
             the map image and course file.
-          </p>
-        </div>
-      </main>
-    </div>
+          </Typography>
+        </Alert>
+      </Container>
+    </Box>
   )
 }
