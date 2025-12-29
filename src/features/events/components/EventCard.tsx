@@ -1,5 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Chip from '@mui/material/Chip'
+import CircularProgress from '@mui/material/CircularProgress'
+import EventIcon from '@mui/icons-material/Event'
+import ShareIcon from '@mui/icons-material/Share'
+import { Button } from '../../../shared/components'
 import { Event } from '../../../shared/types'
 import { canUseWebShare, shareEvent, exportEventAsZip } from '../../events/services/eventSharer'
 
@@ -116,57 +126,66 @@ export function EventCard({ event, onDelete }: EventCardProps) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-lg font-semibold text-gray-900 truncate">
-              {event.name}
-            </h3>
-            {event.isDemo && (
-              <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                Demo
-              </span>
-            )}
-          </div>
+    <Card sx={{ transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 4 } }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {/* Left side: Event info */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+              <Typography variant="h6" noWrap>
+                {event.name}
+              </Typography>
+              {event.isDemo && (
+                <Chip label="Demo" color="info" size="small" />
+              )}
+            </Box>
 
-          <p className="text-sm text-gray-600 mb-3">
-            {formatDate(event.date)}
-          </p>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              {formatDate(event.date)}
+            </Typography>
 
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.857 9.809a.75.75 0 01-1.214.882l-3.483-4.79a.75.75 0 011.214-.882l3.483 4.79z"/>
-            </svg>
-            <span>{event.courses.length} course{event.courses.length !== 1 ? 's' : ''}</span>
-          </div>
-        </div>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <EventIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {event.courses.length} course{event.courses.length !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+          </Box>
 
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={handleView}
-            className="px-4 py-2 bg-forest-600 text-white rounded hover:bg-forest-700 transition-colors text-sm font-medium"
-          >
-            View Map
-          </button>
-          <button
-            onClick={handleShare}
-            disabled={isSharing}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            title={canUseWebShare() ? 'Share event files via native share dialog' : 'Export event files for sharing'}
-          >
-            {isSharing ? 'Preparing...' : 'Share/Export'}
-          </button>
-          {!event.isDemo && (
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 bg-white border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors text-sm font-medium"
+          {/* Right side: Action buttons */}
+          <Stack spacing={1} sx={{ minWidth: 120 }}>
+            <Button
+              variant="primary"
+              size="md"
+              fullWidth
+              onClick={handleView}
             >
-              Delete
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+              View Map
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              fullWidth
+              disabled={isSharing}
+              onClick={handleShare}
+              startIcon={isSharing ? <CircularProgress size={16} /> : <ShareIcon />}
+              title={canUseWebShare() ? 'Share event files via native share dialog' : 'Export event files for sharing'}
+            >
+              {isSharing ? 'Preparing...' : 'Share'}
+            </Button>
+            {!event.isDemo && (
+              <Button
+                variant="danger"
+                size="md"
+                fullWidth
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
   )
 }

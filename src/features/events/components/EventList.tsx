@@ -1,3 +1,7 @@
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { Event } from '../../../shared/types'
 import { EventCard } from './EventCard'
 
@@ -12,25 +16,26 @@ interface EventListProps {
 export function EventList({ events, onDelete }: EventListProps) {
   if (events.length === 0) {
     return (
-      <div className="text-center py-12">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No events</h3>
-        <p className="mt-1 text-sm text-gray-500">
+      <Box
+        sx={{
+          textAlign: 'center',
+          py: 12,
+        }}
+      >
+        <DescriptionOutlinedIcon
+          sx={{
+            fontSize: 48,
+            color: 'text.disabled',
+            mb: 2,
+          }}
+        />
+        <Typography variant="body1" fontWeight="medium" gutterBottom>
+          No events
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
           Get started by uploading your first event.
-        </p>
-      </div>
+        </Typography>
+      </Box>
     )
   }
 
@@ -40,7 +45,7 @@ export function EventList({ events, onDelete }: EventListProps) {
   })
 
   return (
-    <div className="space-y-4">
+    <Stack spacing={2}>
       {sortedEvents.map(event => (
         <EventCard
           key={event.id}
@@ -48,6 +53,6 @@ export function EventList({ events, onDelete }: EventListProps) {
           onDelete={onDelete}
         />
       ))}
-    </div>
+    </Stack>
   )
 }

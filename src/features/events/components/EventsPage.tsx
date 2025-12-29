@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import LinearProgress from '@mui/material/LinearProgress'
+import AddIcon from '@mui/icons-material/Add'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import { Event } from '../../../shared/types'
 import { db } from '../../../db/schema'
 import { EventList } from './EventList'
 import { Loading } from '../../../shared/components/Loading'
+import { Button } from '../../../shared/components'
 
 /**
  * Events page - list and manage all stored events
@@ -68,79 +80,100 @@ export function EventsPage() {
     return (storageUsage.used / storageUsage.total) * 100
   }
 
+  const getStorageColor = (): 'success' | 'warning' | 'error' => {
+    const percentage = getStoragePercentage()
+    if (percentage > 80) return 'error'
+    if (percentage > 60) return 'warning'
+    return 'success'
+  }
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <Loading />
-      </div>
+      </Box>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
       {/* Header */}
-      <header className="bg-forest-800 text-white py-4 px-6">
-        <div className="container mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold">Forest Team</h1>
-        </div>
-      </header>
+      <AppBar position="static">
+        <Toolbar>
+          <Container maxWidth="md">
+            <Typography variant="h5" component="h1" fontWeight="bold">
+              Forest Team
+            </Typography>
+          </Container>
+        </Toolbar>
+      </AppBar>
 
       {/* Main content */}
-      <main className="container mx-auto max-w-4xl p-6">
+      <Container maxWidth="md" sx={{ py: 3 }}>
         {/* Action buttons */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-3">
-          <button
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          sx={{ mb: 3 }}
+        >
+          <Button
+            variant="primary"
+            size="lg"
             onClick={() => navigate('/upload')}
-            className="px-6 py-3 bg-forest-600 text-white rounded-lg hover:bg-forest-700 transition-colors font-medium"
+            startIcon={<AddIcon />}
+            fullWidth
           >
-            + Upload New Event
-          </button>
-          <button
+            Upload New Event
+          </Button>
+          <Button
+            variant="secondary"
+            size="lg"
             onClick={() => navigate('/import')}
-            className="px-6 py-3 bg-white border-2 border-forest-600 text-forest-700 rounded-lg hover:bg-forest-50 transition-colors font-medium"
+            startIcon={<FileDownloadIcon />}
+            fullWidth
           >
-            📥 Import Shared Event
-          </button>
-        </div>
+            Import Shared Event
+          </Button>
+        </Stack>
 
         {/* Event list */}
         <EventList events={events} onDelete={handleDelete} />
 
         {/* Storage info */}
-        <div className="mt-6 space-y-4">
+        <Box sx={{ mt: 3 }}>
           {/* Event count */}
-          <div className="text-center text-sm text-gray-600">
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
             {events.length} event{events.length !== 1 ? 's' : ''} stored
-          </div>
+          </Typography>
 
           {/* Storage usage */}
           {storageUsage && (
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Storage Usage</span>
-                <span className="text-sm text-gray-600">
-                  {formatBytes(storageUsage.used)} / {formatBytes(storageUsage.total)}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all ${
-                    getStoragePercentage() > 80 ? 'bg-red-600' :
-                    getStoragePercentage() > 60 ? 'bg-yellow-600' :
-                    'bg-forest-600'
-                  }`}
-                  style={{ width: `${Math.min(100, getStoragePercentage())}%` }}
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" fontWeight="medium">
+                    Storage Usage
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {formatBytes(storageUsage.used)} / {formatBytes(storageUsage.total)}
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={Math.min(100, getStoragePercentage())}
+                  color={getStorageColor()}
+                  sx={{ height: 8, borderRadius: 1 }}
                 />
-              </div>
-              {getStoragePercentage() > 80 && (
-                <p className="text-xs text-red-600 mt-2">
-                  Storage is running low. Consider deleting old events.
-                </p>
-              )}
-            </div>
+                {getStoragePercentage() > 80 && (
+                  <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                    Storage is running low. Consider deleting old events.
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
           )}
-        </div>
-      </main>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   )
 }
