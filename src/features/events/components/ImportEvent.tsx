@@ -312,11 +312,19 @@ export function ImportEvent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-forest-800 text-white py-4 px-6">
-        <div className="container mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold">Import Shared Event</h1>
-          <p className="text-sm text-forest-100 mt-1">
-            Import an event that was shared with you
-          </p>
+        <div className="container mx-auto max-w-4xl flex items-center gap-4">
+          <button
+            onClick={handleCancel}
+            className="px-3 py-2 hover:bg-forest-700 rounded"
+          >
+            ← Back
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold">Import Shared Event</h1>
+            <p className="text-sm text-forest-100">
+              Import an event that was shared with you
+            </p>
+          </div>
         </div>
       </header>
 

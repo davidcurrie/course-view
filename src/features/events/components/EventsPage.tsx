@@ -80,19 +80,11 @@ export function EventsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-forest-800 text-white py-4 px-6">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">My Events</h1>
-            <p className="text-sm text-forest-100">
-              {events.length} event{events.length !== 1 ? 's' : ''} stored
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-forest-700 hover:bg-forest-600 rounded transition-colors"
-          >
-            ← Home
-          </button>
+        <div className="container mx-auto max-w-4xl">
+          <h1 className="text-2xl font-bold">Forest Team</h1>
+          <p className="text-sm text-forest-100">
+            {events.length} event{events.length !== 1 ? 's' : ''} stored
+          </p>
         </div>
       </header>
 
