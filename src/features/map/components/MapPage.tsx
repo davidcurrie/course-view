@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import L from 'leaflet'
 import { Event, Course } from '../../../shared/types'
 import { db } from '../../../db/schema'
@@ -7,6 +13,7 @@ import { MapView } from './MapView'
 import { ZoomControls } from './ZoomControls'
 import { SettingsPanel } from './SettingsPanel'
 import { Loading } from '../../../shared/components/Loading'
+import { Button } from '../../../shared/components/Button'
 import { CourseLayer } from '../../course/components/CourseLayer'
 import { ControlsLayer } from '../../course/components/ControlsLayer'
 import { useGPSTracking } from '../../gps/hooks/useGPSTracking'
@@ -100,52 +107,74 @@ export function MapPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <Loading />
-      </div>
+      </Box>
     )
   }
 
   if (error || !event) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4">
-        <p className="text-outdoor-base text-red-600">{error || 'Event not found'}</p>
-        <button
-          onClick={() => navigate('/')}
-          className="px-4 py-2 bg-forest-600 text-white rounded hover:bg-forest-700"
-        >
-          Back to Home
-        </button>
-      </div>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          gap: 2,
+          p: 2,
+        }}
+      >
+        <Typography variant="body1" color="error">
+          {error || 'Event not found'}
+        </Typography>
+        <Button onClick={() => navigate('/')}>Back to Home</Button>
+      </Box>
     )
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
-      <div className="bg-forest-700 text-white p-3 flex items-center justify-between">
-        <button
-          onClick={() => navigate('/')}
-          className="px-3 py-2 hover:bg-forest-600 rounded"
-        >
-          ← Back
-        </button>
-        <h1 className="text-outdoor-base font-semibold truncate mx-2">
-          {event.name}
-        </h1>
-        <div className="w-16" /> {/* Spacer for centering */}
-      </div>
+      <AppBar position="static">
+        <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <IconButton edge="start" color="inherit" onClick={() => navigate('/')}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography
+            variant="h6"
+            component="h1"
+            fontWeight="semibold"
+            noWrap
+            sx={{ flex: 1, textAlign: 'center', px: 2 }}
+          >
+            {event.name}
+          </Typography>
+          <Box sx={{ width: 48 }} /> {/* Spacer for centering */}
+        </Toolbar>
+      </AppBar>
 
       {/* Map */}
-      <div className="flex-1 relative">
+      <Box sx={{ flex: 1, position: 'relative' }}>
         <MapView
           imageUrl={imageUrl}
           bounds={event.map.bounds}
           georef={event.map.georef}
           onMapReady={setMap}
         />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 1000 }}>
-          <div style={{ position: 'absolute', left: '1rem', top: '1rem', zIndex: 1000, pointerEvents: 'auto' }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            pointerEvents: 'none',
+            zIndex: 1000,
+          }}
+        >
+          <Box sx={{ position: 'absolute', left: 16, top: 16, pointerEvents: 'auto' }}>
             <SettingsPanel
               courses={courses}
               onToggleCourse={handleToggleCourse}
@@ -154,15 +183,15 @@ export function MapPage() {
               onToggleGPS={toggleTracking}
               gpsError={gpsError?.message ?? null}
             />
-          </div>
-          <div style={{ position: 'absolute', right: '1rem', top: '1rem', zIndex: 1000, pointerEvents: 'auto' }}>
+          </Box>
+          <Box sx={{ position: 'absolute', right: 16, top: 16, pointerEvents: 'auto' }}>
             <ZoomControls map={map} />
-          </div>
-        </div>
+          </Box>
+        </Box>
         <ControlsLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
         <CourseLayer map={map} courses={courses} useProjectedCoords={useProjectedCoords} />
         <GPSMarker map={map} position={position} />
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import Box from '@mui/material/Box'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { LatLngBounds, GeoReference } from '../../../shared/types'
@@ -118,10 +119,13 @@ export function MapView({ imageUrl, bounds, georef, onMapReady }: MapViewProps) 
   }, [imageUrl, bounds, georef, onMapReady])
 
   return (
-    <div
+    <Box
       ref={mapContainer}
-      className="w-full h-full"
-      style={{ touchAction: 'none' }} // Prevent default touch behaviors
+      sx={{
+        width: '100%',
+        height: '100%',
+        touchAction: 'none', // Prevent default touch behaviors
+      }}
     />
   )
 }
