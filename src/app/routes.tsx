@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
+import Box from '@mui/material/Box'
 import Layout from './Layout'
 import { Loading } from '../shared/components'
 
@@ -11,9 +12,9 @@ const ImportEvent = lazy(() => import('../features/events/components').then(m =>
 
 // Loading fallback component
 const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
+  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
     <Loading />
-  </div>
+  </Box>
 )
 
 export const router = createBrowserRouter([

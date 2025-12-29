@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'Forest Team',
         short_name: 'Forest Team',
         description: 'Orienteering event management for officials',
-        theme_color: '#2d6f5c',
+        theme_color: '#1976d2',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'any',
