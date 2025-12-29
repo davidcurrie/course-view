@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Course } from '../../../shared/types'
 import { useVisitTrackingStore } from '../../../store/visitTrackingStore'
 
@@ -30,12 +30,16 @@ export function SettingsPanel({
   // Visit tracking state
   const {
     visitDistanceThreshold,
-    isTrackingEnabled,
     visitedControls,
     setVisitDistanceThreshold,
     setTrackingEnabled,
     resetVisitedControls,
   } = useVisitTrackingStore()
+
+  // Automatically enable/disable visit tracking when GPS changes
+  useEffect(() => {
+    setTrackingEnabled(isGPSTracking)
+  }, [isGPSTracking, setTrackingEnabled])
 
   const handleReset = () => {
     if (visitedControls.size === 0) return
@@ -113,10 +117,10 @@ export function SettingsPanel({
 
             {/* Content */}
             <div className="p-4">
-              {/* GPS Tracking Section */}
+              {/* GPS & Visit Tracking Section */}
               <div className="mb-8">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  GPS Tracking
+                  GPS & Visit Tracking
                 </h3>
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
                   {gpsError && (
@@ -125,96 +129,41 @@ export function SettingsPanel({
                     </div>
                   )}
 
-                  <div className={`p-3 rounded ${isGPSTracking ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${isGPSTracking ? 'bg-blue-500' : 'bg-gray-400'}`} />
-                        <span className={`text-sm font-medium ${isGPSTracking ? 'text-blue-800' : 'text-gray-500'}`}>
-                          {isGPSTracking ? 'GPS Active' : 'GPS Off'}
-                        </span>
+                  {/* GPS Toggle */}
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">GPS Tracking</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {isGPSTracking ? 'Location tracking and visit detection active' : 'Enable to track location and mark visited controls'}
                       </div>
-                      <button
-                        onClick={onToggleGPS}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full border-none transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          isGPSTracking ? 'bg-blue-600' : 'bg-gray-300'
-                        } cursor-pointer`}
-                        aria-label="Toggle GPS tracking"
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                            isGPSTracking ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
                     </div>
-                    {!isGPSTracking && !gpsError && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Enable to see your location on the map
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Visit Tracking Section */}
-              <div className="mb-8">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Visit Tracking
-                </h3>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  {!isGPSTracking && (
-                    <div className="p-3 rounded bg-yellow-100 border border-yellow-300 mb-4">
-                      <p className="text-sm text-yellow-800">
-                        Enable GPS tracking to use visit tracking features
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Enable/Disable Toggle */}
-                  <div className={`p-3 rounded mb-4 ${isTrackingEnabled && isGPSTracking ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-2 h-2 rounded-full ${isTrackingEnabled && isGPSTracking ? 'bg-green-500' : 'bg-gray-400'}`}
-                        />
-                        <span className={`text-sm font-medium ${isTrackingEnabled && isGPSTracking ? 'text-green-800' : 'text-gray-500'}`}>
-                          {isTrackingEnabled && isGPSTracking ? 'Tracking Active' : 'Tracking Paused'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => setTrackingEnabled(!isTrackingEnabled)}
-                        disabled={!isGPSTracking}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full border-none transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                          isTrackingEnabled && isGPSTracking ? 'bg-green-600' : 'bg-gray-300'
-                        } ${isGPSTracking ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                        aria-label="Toggle visit tracking"
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                            isTrackingEnabled && isGPSTracking ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    {!isTrackingEnabled && isGPSTracking && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Enable to mark controls as visited
-                      </p>
-                    )}
+                    <button
+                      onClick={onToggleGPS}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full border-none transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        isGPSTracking ? 'bg-blue-600' : 'bg-gray-300'
+                      } cursor-pointer`}
+                      aria-label="Toggle GPS tracking"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                          isGPSTracking ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
                   </div>
 
                   {/* Distance Threshold */}
                   <div className="mb-4">
                     <label htmlFor="visit-distance" className="text-sm text-gray-500 block mb-2">
-                      Visit distance
+                      Visit distance threshold
                     </label>
                     <select
                       id="visit-distance"
                       value={visitDistanceThreshold}
                       onChange={(e) => setVisitDistanceThreshold(Number(e.target.value))}
-                      disabled={!isTrackingEnabled || !isGPSTracking}
-                      className={`w-full px-3 py-2 text-sm border border-gray-300 rounded ${
-                        !isTrackingEnabled || !isGPSTracking
+                      disabled={!isGPSTracking}
+                      className={`w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        !isGPSTracking
                           ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           : 'bg-white cursor-pointer'
                       }`}
@@ -230,15 +179,15 @@ export function SettingsPanel({
                   {/* Visited Count & Reset */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                     <span className="text-sm text-gray-500">
-                      Visited: <span className="font-semibold text-green-500">{visitedControls.size}</span>
+                      Visited: <span className="font-semibold text-blue-600">{visitedControls.size}</span>
                     </span>
                     <button
                       onClick={handleReset}
                       disabled={visitedControls.size === 0 || !isGPSTracking}
-                      className={`px-4 py-2 text-sm font-medium text-white rounded transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                      className={`px-4 py-2 text-sm font-medium text-white rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         visitedControls.size === 0 || !isGPSTracking
                           ? 'bg-gray-300 cursor-not-allowed'
-                          : 'bg-green-700 hover:bg-green-800 cursor-pointer'
+                          : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
                       }`}
                     >
                       Reset
