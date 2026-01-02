@@ -514,8 +514,8 @@ function findNonOverlappingPosition(
   existingLabelPositions: [number, number][]
 ): [number, number] {
   const coords = transform(currentPos)
-  const offsetDistance = 65 // meters from control center (control radius is 37.5m)
-  const minLabelDistance = 40 // minimum distance between labels in meters
+  const offsetDistance = 80 // meters from control center (control radius is 37.5m, extra space for larger numbers)
+  const minLabelDistance = 50 // minimum distance between labels in meters
 
   // Calculate preferred angle based on course direction
   let preferredAngle = 45 // default to northeast
@@ -587,10 +587,6 @@ function createControlNumberLabel(
   number: number,
   fontSize: number
 ): L.Marker {
-  // Calculate text shadow size proportional to font size
-  const shadowSize = Math.max(1, Math.round(fontSize / 8))
-  const shadowSize2 = Math.max(2, Math.round(fontSize / 6))
-
   const icon = L.divIcon({
     className: 'control-number-label',
     html: `<div style="
@@ -598,10 +594,6 @@ function createControlNumberLabel(
       color: #9333ea;
       font-weight: bold;
       font-size: ${fontSize}px;
-      text-shadow: -${shadowSize}px -${shadowSize}px 0 #fff, ${shadowSize}px -${shadowSize}px 0 #fff,
-                   -${shadowSize}px ${shadowSize}px 0 #fff, ${shadowSize}px ${shadowSize}px 0 #fff,
-                   -${shadowSize2}px -${shadowSize2}px 0 #fff, ${shadowSize2}px -${shadowSize2}px 0 #fff,
-                   -${shadowSize2}px ${shadowSize2}px 0 #fff, ${shadowSize2}px ${shadowSize2}px 0 #fff;
       white-space: nowrap;
       line-height: 1;
     ">${number}</div>`,
