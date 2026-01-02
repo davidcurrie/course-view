@@ -466,6 +466,76 @@ export function createCourseLayer(
 }
 
 /**
+ * Calculate the best position for a control number label
+ * Positions it perpendicular to the course line to avoid overlap
+ */
+function calculateLabelPosition(
+  currentPos: Position,
+  prevPos: Position | null,
+  nextPos: Position | null,
+  transform: CoordinateTransform
+): [number, number] {
+  const coords = transform(currentPos)
+  const offsetDistance = 50 // meters from control center
+
+  let labelAngle = 45 // default to northeast if no context
+
+  if (prevPos && nextPos) {
+    // Between two controls - position perpendicular to average bearing
+    const bearingFrom = calculateBearing(prevPos, currentPos)
+    const bearingTo = calculateBearing(currentPos, nextPos)
+    const avgBearing = (bearingFrom + bearingTo) / 2
+    // Position 90 degrees from average bearing
+    labelAngle = avgBearing + 90
+  } else if (prevPos) {
+    // Last control - position perpendicular to incoming bearing
+    const bearingFrom = calculateBearing(prevPos, currentPos)
+    labelAngle = bearingFrom + 90
+  } else if (nextPos) {
+    // First control - position perpendicular to outgoing bearing
+    const bearingTo = calculateBearing(currentPos, nextPos)
+    labelAngle = bearingTo + 90
+  }
+
+  const labelRad = labelAngle * Math.PI / 180
+  const lat = currentPos.lat
+  const metersPerDegreeLat = 111320
+  const metersPerDegreeLng = 111320 * Math.cos(lat * Math.PI / 180)
+
+  const labelLat = coords[0] + (offsetDistance * Math.cos(labelRad)) / metersPerDegreeLat
+  const labelLng = coords[1] + (offsetDistance * Math.sin(labelRad)) / metersPerDegreeLng
+
+  return [labelLat, labelLng]
+}
+
+/**
+ * Create a control number label as a DivIcon
+ */
+function createControlNumberLabel(
+  position: [number, number],
+  number: number
+): L.Marker {
+  const icon = L.divIcon({
+    className: 'control-number-label',
+    html: `<div style="
+      background-color: white;
+      color: #9333ea;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 2px solid #9333ea;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    ">${number}</div>`,
+    iconSize: [24, 20],
+    iconAnchor: [12, 10] // Center the icon
+  })
+
+  return L.marker(position, { icon, interactive: false })
+}
+
+/**
  * Create a layer group for all unique controls (always visible)
  */
 export function createControlsLayer(
@@ -480,6 +550,61 @@ export function createControlsLayer(
     const visited = isControlVisited(uniqueControl.controlIds)
     const marker = createControlMarker(uniqueControl, transform, zoom, visited)
     marker.addTo(layerGroup)
+  })
+
+  return layerGroup
+}
+
+/**
+ * Create a layer group for controls with numbers (for single course view)
+ */
+export function createNumberedControlsLayer(
+  course: Course,
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15,
+  isControlVisited: (controlId: string) => boolean = () => false
+): L.LayerGroup {
+  const layerGroup = L.layerGroup()
+
+  course.controls.forEach((control, index) => {
+    // Create control circle
+    const visited = isControlVisited(control.id)
+    const coords = transform(control.position)
+    const circle = L.circle(coords, {
+      radius: 37.5,
+      fillColor: 'transparent',
+      fillOpacity: 0,
+      color: visited ? '#22c55e' : '#9333ea',
+      weight: calculateLineWidth(zoom),
+      interactive: true,
+    })
+
+    // Add popup
+    const popupContent = `
+      <div style="font-family: Arial, sans-serif; min-width: 180px;">
+        <div style="font-weight: bold; margin-bottom: 8px;">Control ${control.code}</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0;">
+          <div style="width: 12px; height: 12px; background-color: ${course.color}; border-radius: 2px;"></div>
+          <span style="font-size: 12px;">${course.name} - Control ${control.number}</span>
+        </div>
+      </div>
+    `
+    circle.bindPopup(popupContent, { closeButton: true, minWidth: 180 })
+    circle.addTo(layerGroup)
+
+    // Create control number label
+    const prevControl = index > 0 ? course.controls[index - 1] : null
+    const nextControl = index < course.controls.length - 1 ? course.controls[index + 1] : null
+
+    const labelPos = calculateLabelPosition(
+      control.position,
+      prevControl?.position || null,
+      nextControl?.position || null,
+      transform
+    )
+
+    const label = createControlNumberLabel(labelPos, control.number)
+    label.addTo(layerGroup)
   })
 
   return layerGroup

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import { Course, Position } from '../../../shared/types'
-import { extractUniqueControls, createControlsLayer, calculateLineWidth } from '../services/courseRenderer'
+import { extractUniqueControls, createControlsLayer, createNumberedControlsLayer, calculateLineWidth } from '../services/courseRenderer'
 import { useVisitTrackingStore } from '../../../store/visitTrackingStore'
 
 interface ControlsLayerProps {
@@ -98,15 +98,24 @@ export function ControlsLayer({ map, courses, useProjectedCoords }: ControlsLaye
           layerRef.current = null
         }
 
-        // Extract unique controls from all courses
-        const uniqueControls = extractUniqueControls(courses)
-        console.log('Extracted', uniqueControls.length, 'unique controls')
+        let layer: L.LayerGroup
 
-        // Create and add controls layer with visit tracking
-        const checkVisited = (controlIds: string[]) => {
-          return controlIds.some(id => isControlVisited(id))
+        // Check if we're showing a single course (show numbered controls)
+        if (courses.length === 1) {
+          console.log('Rendering numbered controls for single course:', courses[0].name)
+          layer = createNumberedControlsLayer(courses[0], transform, zoom, isControlVisited)
+        } else {
+          // Extract unique controls from all courses (no numbers)
+          const uniqueControls = extractUniqueControls(courses)
+          console.log('Extracted', uniqueControls.length, 'unique controls')
+
+          // Create and add controls layer with visit tracking
+          const checkVisited = (controlIds: string[]) => {
+            return controlIds.some(id => isControlVisited(id))
+          }
+          layer = createControlsLayer(uniqueControls, transform, zoom, checkVisited)
         }
-        const layer = createControlsLayer(uniqueControls, transform, zoom, checkVisited)
+
         console.log('Adding controls layer to map...')
         layer.addTo(map)
         layerRef.current = layer
