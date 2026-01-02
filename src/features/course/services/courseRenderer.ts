@@ -606,13 +606,16 @@ function findNonOverlappingPosition(
   transform: CoordinateTransform,
   existingLabelPositions: [number, number][],
   controlNumber: number,
-  finishPosition: Position | null
+  finishPosition: Position | null,
+  startPosition: Position | null
 ): [number, number] {
   const coords = transform(currentPos)
   const offsetDistance = calculateLabelOffset(controlNumber)
   const minLabelDistance = 50 // minimum distance between labels in meters
   const finishOuterRadius = 45 // Finish marker outer circle radius in meters
   const finishMargin = 10 // Extra margin around finish marker
+  const startRadius = 52 // Start triangle extends ~52m from center (90m side / sqrt(3))
+  const startMargin = 10 // Extra margin around start marker
 
   // Calculate preferred angle based on course direction
   let preferredAngle = 45 // default to northeast
@@ -677,6 +680,14 @@ function findNonOverlappingPosition(
     if (!hasOverlap && finishPosition) {
       const finishCoords = transform(finishPosition)
       if (calculateDistance(labelPos, finishCoords) < finishOuterRadius + finishMargin) {
+        hasOverlap = true
+      }
+    }
+
+    // Check if this position overlaps with the start marker
+    if (!hasOverlap && startPosition) {
+      const startCoords = transform(startPosition)
+      if (calculateDistance(labelPos, startCoords) < startRadius + startMargin) {
         hasOverlap = true
       }
     }
@@ -827,7 +838,8 @@ export function createNumberedControlsLayer(
       transform,
       labelPositions,
       control.number,
-      course.finish
+      course.finish,
+      course.start
     )
 
     labelPositions.push(labelPos)
