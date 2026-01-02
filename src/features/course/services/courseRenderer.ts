@@ -24,6 +24,26 @@ export function calculateLineWidth(zoom: number, latitude: number = 51): number 
 }
 
 /**
+ * Calculate appropriate font size in pixels for current zoom level
+ * Target: 4mm on a 1:15,000 scale map = 60m on ground
+ * @param zoom Current map zoom level
+ * @param latitude Latitude for calculating resolution (default 51 for UK)
+ */
+export function calculateFontSize(zoom: number, latitude: number = 51): number {
+  // Web Mercator resolution: meters per pixel at given zoom and latitude
+  const resolution = 156543.04 * Math.cos(latitude * Math.PI / 180) / Math.pow(2, zoom)
+
+  // 4mm at 1:15,000 scale = 60m on ground
+  const targetHeightMeters = 60
+
+  // Calculate pixel height
+  const pixelHeight = targetHeightMeters / resolution
+
+  // Clamp between 10 and 32 pixels for readability
+  return Math.max(10, Math.min(32, pixelHeight))
+}
+
+/**
  * Represents a unique control with all courses that visit it
  */
 export interface UniqueControl {
@@ -564,21 +584,29 @@ function findNonOverlappingPosition(
  */
 function createControlNumberLabel(
   position: [number, number],
-  number: number
+  number: number,
+  fontSize: number
 ): L.Marker {
+  // Calculate text shadow size proportional to font size
+  const shadowSize = Math.max(1, Math.round(fontSize / 8))
+  const shadowSize2 = Math.max(2, Math.round(fontSize / 6))
+
   const icon = L.divIcon({
     className: 'control-number-label',
     html: `<div style="
       background-color: transparent;
       color: #9333ea;
       font-weight: bold;
-      font-size: 16px;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff,
-                   -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+      font-size: ${fontSize}px;
+      text-shadow: -${shadowSize}px -${shadowSize}px 0 #fff, ${shadowSize}px -${shadowSize}px 0 #fff,
+                   -${shadowSize}px ${shadowSize}px 0 #fff, ${shadowSize}px ${shadowSize}px 0 #fff,
+                   -${shadowSize2}px -${shadowSize2}px 0 #fff, ${shadowSize2}px -${shadowSize2}px 0 #fff,
+                   -${shadowSize2}px ${shadowSize2}px 0 #fff, ${shadowSize2}px ${shadowSize2}px 0 #fff;
       white-space: nowrap;
+      line-height: 1;
     ">${number}</div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10] // Center the icon
+    iconSize: [fontSize * 1.5, fontSize * 1.5],
+    iconAnchor: [fontSize * 0.75, fontSize * 0.75] // Center the icon
   })
 
   return L.marker(position, { icon, interactive: false })
@@ -615,6 +643,7 @@ export function createNumberedControlsLayer(
 ): L.LayerGroup {
   const layerGroup = L.layerGroup()
   const labelPositions: [number, number][] = []
+  const fontSize = calculateFontSize(zoom)
 
   course.controls.forEach((control, index) => {
     // Create control circle
@@ -656,7 +685,7 @@ export function createNumberedControlsLayer(
 
     labelPositions.push(labelPos)
 
-    const label = createControlNumberLabel(labelPos, control.number)
+    const label = createControlNumberLabel(labelPos, control.number, fontSize)
     label.addTo(layerGroup)
   })
 
