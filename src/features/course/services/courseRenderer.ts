@@ -56,6 +56,64 @@ export interface UniqueControl {
 }
 
 /**
+ * Represents a unique start position with all courses that use it
+ */
+export interface UniqueStart {
+  position: Position
+  courseNames: string[]
+}
+
+/**
+ * Extract unique start positions from all courses
+ */
+export function extractUniqueStarts(courses: Course[]): UniqueStart[] {
+  const startMap = new Map<string, UniqueStart>()
+
+  courses.forEach(course => {
+    const key = `${course.start.lat}_${course.start.lng}`
+
+    if (!startMap.has(key)) {
+      startMap.set(key, {
+        position: course.start,
+        courseNames: []
+      })
+    }
+
+    const uniqueStart = startMap.get(key)!
+    if (!uniqueStart.courseNames.includes(course.name)) {
+      uniqueStart.courseNames.push(course.name)
+    }
+  })
+
+  return Array.from(startMap.values())
+}
+
+/**
+ * Extract unique finish positions from all courses
+ */
+export function extractUniqueFinishes(courses: Course[]): UniqueStart[] {
+  const finishMap = new Map<string, UniqueStart>()
+
+  courses.forEach(course => {
+    const key = `${course.finish.lat}_${course.finish.lng}`
+
+    if (!finishMap.has(key)) {
+      finishMap.set(key, {
+        position: course.finish,
+        courseNames: []
+      })
+    }
+
+    const uniqueFinish = finishMap.get(key)!
+    if (!uniqueFinish.courseNames.includes(course.name)) {
+      uniqueFinish.courseNames.push(course.name)
+    }
+  })
+
+  return Array.from(finishMap.values())
+}
+
+/**
  * Extract unique controls from all courses
  */
 export function extractUniqueControls(courses: Course[]): UniqueControl[] {
@@ -675,6 +733,46 @@ export function createControlsLayer(
     const visited = isControlVisited(uniqueControl.controlIds)
     const marker = createControlMarker(uniqueControl, transform, zoom, visited)
     marker.addTo(layerGroup)
+  })
+
+  return layerGroup
+}
+
+/**
+ * Create a layer group for unique starts and finishes (for "All Controls" view)
+ * All start triangles point north (upward)
+ */
+export function createUniqueStartsFinishesLayer(
+  courses: Course[],
+  transform: CoordinateTransform = pos => [pos.lat, pos.lng],
+  zoom: number = 15
+): L.LayerGroup {
+  const layerGroup = L.layerGroup()
+
+  // Extract unique starts
+  const uniqueStarts = extractUniqueStarts(courses)
+  uniqueStarts.forEach(uniqueStart => {
+    // Create start marker pointing north (no rotation)
+    const startMarker = createStartMarker(
+      uniqueStart.position,
+      null, // null = point north
+      uniqueStart.courseNames.join(', '),
+      transform,
+      zoom
+    )
+    startMarker.addTo(layerGroup)
+  })
+
+  // Extract unique finishes
+  const uniqueFinishes = extractUniqueFinishes(courses)
+  uniqueFinishes.forEach(uniqueFinish => {
+    const finishMarker = createFinishMarker(
+      uniqueFinish.position,
+      uniqueFinish.courseNames.join(', '),
+      transform,
+      zoom
+    )
+    finishMarker.addTo(layerGroup)
   })
 
   return layerGroup

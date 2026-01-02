@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import { Course, Position } from '../../../shared/types'
-import { createCourseLayer, calculateLineWidth } from '../services/courseRenderer'
+import { createCourseLayer, createUniqueStartsFinishesLayer, calculateLineWidth } from '../services/courseRenderer'
 
 interface CourseLayerProps {
   map: L.Map | null
@@ -105,28 +105,45 @@ export function CourseLayer({ map, courses, useProjectedCoords, showPolylines = 
       }
 
       try {
-        // Remove layers for courses that are no longer visible
-        currentLayers.forEach((layer, courseId) => {
-          const course = courses.find(c => c.id === courseId)
-          if (!course || !course.visible) {
-            console.log('Removing layer for course', courseId)
-            layer.remove()
-            currentLayers.delete(courseId)
-          }
-        })
+        if (!showPolylines) {
+          // "All Controls" mode: show unique starts and finishes only
+          console.log('Rendering unique starts and finishes for all courses')
 
-        // Add layers for visible courses that aren't rendered yet
-        courses.forEach(course => {
-          console.log('Processing course:', course.name, 'visible:', course.visible, 'already rendered:', currentLayers.has(course.id))
-          if (course.visible && !currentLayers.has(course.id)) {
-            console.log('Creating layer for course:', course.name)
-            const layer = createCourseLayer(course, transform, zoom, showPolylines)
-            console.log('Adding layer to map...')
-            layer.addTo(map)
-            currentLayers.set(course.id, layer)
-            console.log('Layer added successfully')
-          }
-        })
+          // Remove any existing layers
+          currentLayers.forEach((layer) => {
+            layer.remove()
+          })
+          currentLayers.clear()
+
+          // Create single layer with unique starts/finishes
+          const layer = createUniqueStartsFinishesLayer(courses, transform, zoom)
+          layer.addTo(map)
+          currentLayers.set('unique-starts-finishes', layer)
+        } else {
+          // Individual course mode: show full course with lines
+          // Remove layers for courses that are no longer visible
+          currentLayers.forEach((layer, courseId) => {
+            const course = courses.find(c => c.id === courseId)
+            if (!course || !course.visible) {
+              console.log('Removing layer for course', courseId)
+              layer.remove()
+              currentLayers.delete(courseId)
+            }
+          })
+
+          // Add layers for visible courses that aren't rendered yet
+          courses.forEach(course => {
+            console.log('Processing course:', course.name, 'visible:', course.visible, 'already rendered:', currentLayers.has(course.id))
+            if (course.visible && !currentLayers.has(course.id)) {
+              console.log('Creating layer for course:', course.name)
+              const layer = createCourseLayer(course, transform, zoom, showPolylines)
+              console.log('Adding layer to map...')
+              layer.addTo(map)
+              currentLayers.set(course.id, layer)
+              console.log('Layer added successfully')
+            }
+          })
+        }
         console.log('Total layers now:', currentLayers.size)
       } catch (e) {
         console.error('Error rendering courses:', e)
