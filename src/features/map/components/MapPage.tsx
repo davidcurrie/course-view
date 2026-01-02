@@ -51,6 +51,11 @@ export function MapPage() {
     visible: selectedTab === 'all' || course.id === selectedTab
   }))
 
+  // For "All Controls" tab, show all controls but no course lines
+  // For individual course tabs, show only that course's controls and lines
+  const coursesForControls = selectedTab === 'all' ? courses : courses.filter(c => c.id === selectedTab)
+  const coursesForLines = selectedTab === 'all' ? [] : visibleCourses.filter(c => c.visible)
+
   useEffect(() => {
     async function loadEvent() {
       if (!eventId) {
@@ -213,8 +218,8 @@ export function MapPage() {
             <ZoomControls map={map} />
           </Box>
         </Box>
-        <ControlsLayer map={map} courses={visibleCourses} useProjectedCoords={useProjectedCoords} />
-        <CourseLayer map={map} courses={visibleCourses} useProjectedCoords={useProjectedCoords} />
+        <ControlsLayer map={map} courses={coursesForControls} useProjectedCoords={useProjectedCoords} />
+        <CourseLayer map={map} courses={coursesForLines} useProjectedCoords={useProjectedCoords} />
         <GPSMarker map={map} position={position} />
       </Box>
     </Box>
