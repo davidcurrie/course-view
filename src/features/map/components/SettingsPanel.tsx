@@ -51,6 +51,7 @@ export function SettingsPanel({ isGPSTracking }: SettingsPanelProps) {
         onClick={() => setIsOpen(!isOpen)}
         startIcon={<SettingsIcon />}
         aria-label="Open settings"
+        sx={{ height: 44 }}
       >
         Settings
       </Button>

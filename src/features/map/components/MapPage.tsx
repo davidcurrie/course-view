@@ -224,16 +224,19 @@ export function MapPage() {
           }}
         >
           {/* Left side controls */}
-          <Box sx={{ position: 'absolute', left: 16, top: 16, pointerEvents: 'auto', display: 'flex', gap: 1 }}>
+          <Box sx={{ position: 'absolute', left: 16, top: 16, pointerEvents: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
             <SettingsPanel isGPSTracking={isTracking} />
             <Button
-              variant={isTracking ? 'primary' : 'secondary'}
+              variant="primary"
               onClick={toggleTracking}
               startIcon={isTracking ? <MyLocationIcon /> : <LocationDisabledIcon />}
               aria-label="Toggle GPS tracking"
               sx={{
-                minWidth: 44,
                 height: 44,
+                bgcolor: isTracking ? 'primary.main' : 'grey.400',
+                '&:hover': {
+                  bgcolor: isTracking ? 'primary.dark' : 'grey.500',
+                },
               }}
             >
               GPS
@@ -242,7 +245,7 @@ export function MapPage() {
 
           {/* GPS Error Alert */}
           {gpsError && (
-            <Box sx={{ position: 'absolute', left: 16, top: 76, pointerEvents: 'auto', maxWidth: 300 }}>
+            <Box sx={{ position: 'absolute', left: 16, top: 108, pointerEvents: 'auto', maxWidth: 300 }}>
               <Alert severity="error" onClose={() => {}}>
                 {gpsError.message}
               </Alert>
