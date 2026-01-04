@@ -32,8 +32,8 @@ export class GPSTracker {
    */
   start(options: PositionOptions = {
     enableHighAccuracy: true,
-    timeout: 10000,
-    maximumAge: 5000
+    timeout: 30000,
+    maximumAge: 0
   }): void {
     if (this.watchId !== null) {
       console.warn('GPS tracking already started')
