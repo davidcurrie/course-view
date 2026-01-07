@@ -68,11 +68,11 @@ Feature requests are welcome! Please include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/courseview.git
-cd courseview
+git clone https://github.com/YOUR-USERNAME/course-view.git
+cd course-view
 
 # Add upstream remote
-git remote add upstream https://github.com/davidcurrie/courseview.git
+git remote add upstream https://github.com/davidcurrie/course-view.git
 
 # Install dependencies
 npm install
@@ -81,7 +81,7 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:5173` to see the app.
+Visit `http://localhost:4173/course-view` to see the app.
 
 ### Keeping Your Fork Updated
 

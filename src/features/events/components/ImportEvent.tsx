@@ -392,7 +392,7 @@ export function ImportEvent() {
                 <Box
                   component="input"
                   type="file"
-                  accept=".zip,.forestteam.zip"
+                  accept=".zip,.course-view.zip"
                   onChange={handleFilesSelected}
                   sx={{
                     display: 'block',
@@ -417,7 +417,7 @@ export function ImportEvent() {
                   }}
                 />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                  Select a .courseview.zip file exported from Course View
+                  Select a .course-view.zip file exported from Course View
                 </Typography>
               </Box>
 

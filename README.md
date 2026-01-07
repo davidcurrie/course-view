@@ -124,8 +124,8 @@ The app will process your files and create a new event stored locally on your de
 
 ```bash
 # Clone the repository
-git clone https://github.com/davidcurrie/courseview.git
-cd courseview
+git clone https://github.com/davidcurrie/course-view.git
+cd course-view
 
 # Install dependencies
 npm install
@@ -264,7 +264,7 @@ netlify deploy --prod --dir=dist
 1. Update `vite.config.ts` with your base path:
    ```typescript
    export default defineConfig({
-     base: '/courseview/',
+     base: '/course-view/',
      // ...
    })
    ```
@@ -383,8 +383,7 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 ## Support
 
 For issues, questions, or suggestions:
-- 📧 Email: support@courseview.app
-- 🐛 Issues: [GitHub Issues](https://github.com/davidcurrie/courseview/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/davidcurrie/course-view/issues)
 - 📖 Docs: [User Guide](./docs/USER_GUIDE.md)
 
 ## Roadmap

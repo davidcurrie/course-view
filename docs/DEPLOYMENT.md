@@ -80,7 +80,7 @@ Vercel provides the easiest deployment with zero configuration.
 2. **Import Project**
    - Click "Add New Project"
    - Select "Import Git Repository"
-   - Choose your `courseview` repository
+   - Choose your `course-view` repository
    - Click "Import"
 
 3. **Configure Build Settings**
@@ -100,7 +100,7 @@ Vercel provides the easiest deployment with zero configuration.
    - Provides preview URL when complete
 
 5. **Access Your App**
-   - URL format: `https://courseview-xxx.vercel.app`
+   - URL format: `https://course-view-xxx.vercel.app`
    - Click URL to test your deployed app
    - Install PWA on your phone to test
 
@@ -111,7 +111,7 @@ Vercel provides the easiest deployment with zero configuration.
 npm install -g vercel
 
 # Navigate to project directory
-cd courseview
+cd course-view
 
 # Login to Vercel
 vercel login
@@ -123,7 +123,7 @@ vercel
 # - Set up and deploy? Yes
 # - Which scope? (select your account)
 # - Link to existing project? No
-# - Project name? courseview
+# - Project name? course-view
 # - Directory? ./
 # - Override settings? No
 
@@ -209,7 +209,7 @@ Netlify is another excellent option with similar features.
    - Click "Add new site" > "Import an existing project"
    - Choose "Deploy with GitHub"
    - Authorize Netlify
-   - Select `courseview` repository
+   - Select `course-view` repository
 
 3. **Configure Build Settings**
 
@@ -236,7 +236,7 @@ Netlify is another excellent option with similar features.
 npm install -g netlify-cli
 
 # Navigate to project
-cd courseview
+cd course-view
 
 # Build the app
 npm run build
@@ -304,7 +304,7 @@ GitHub Pages serves from a subdirectory, so update `vite.config.ts`:
 ```typescript
 // vite.config.ts
 export default defineConfig({
-  base: '/courseview/', // Must match repo name
+  base: '/course-view/', // Must match repo name
   plugins: [
     // ... rest of config
   ]
@@ -378,7 +378,7 @@ git push origin main
 ```
 
 4. **Access Your App**
-   - URL: `https://YOUR-USERNAME.github.io/courseview/`
+   - URL: `https://YOUR-USERNAME.github.io/course-view/`
    - Wait 2-3 minutes for first deployment
 
 ### Method 2: Manual Deployment
@@ -402,7 +402,7 @@ npm run deploy
 
 1. Go to project settings in Vercel
 2. Click "Domains"
-3. Enter your domain (e.g., `forestteam.app`)
+3. Enter your domain (e.g., `course-view.app`)
 4. Vercel provides DNS records to add
 5. Add records to your domain registrar:
    ```
@@ -438,7 +438,7 @@ npm run deploy
 
 1. Add `CNAME` file to `public/` folder:
    ```
-   forestteam.app
+   course-view.app
    ```
 2. Rebuild and deploy
 3. In GitHub repo settings > Pages:

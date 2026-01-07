@@ -79,7 +79,7 @@ export function EventCard({ event, onDelete }: EventCardProps) {
       console.log('ZIP file created successfully, size:', (zipBlob.size / 1024).toFixed(1), 'KB')
 
       // Create filename from event name
-      const filename = `${event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.forestteam.zip`
+      const filename = `${event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.course-view.zip`
 
       // Download the ZIP file
       const url = URL.createObjectURL(zipBlob)

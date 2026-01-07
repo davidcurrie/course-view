@@ -524,7 +524,6 @@ Course View is designed for outdoor use:
    A: Not currently. Feature planned for future release.
 
 **Support:**
-- Email: support@forestteam.app
 - Issues: GitHub Issues
 - Community: Orienteering forums
 

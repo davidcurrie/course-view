@@ -424,14 +424,14 @@ const handleExport = async () => {
   // Trigger download
   const a = document.createElement('a')
   a.href = url
-  a.download = `${event.name}.forestteam.zip`
+  a.download = `${event.name}.course-view.zip`
   a.click()
 
   URL.revokeObjectURL(url)
 }
 ```
 
-This gives users a `.forestteam.zip` file they can share however they want (email, Dropbox, etc), and recipients can import it.
+This gives users a `.course-view.zip` file they can share however they want (email, Dropbox, etc), and recipients can import it.
 
 ## Recommendation
 
@@ -439,7 +439,7 @@ This gives users a `.forestteam.zip` file they can share however they want (emai
 
 1. **Mobile (iOS/Android)**: Use Web Share API for native sharing
 2. **Desktop/Unsupported**: Provide ZIP download + email option
-3. **Import**: Support both individual files and .forestteam.zip packages
+3. **Import**: Support both individual files and .course-view.zip packages
 
 This gives the best experience on mobile (where Course View is primarily used) while maintaining desktop compatibility.
 

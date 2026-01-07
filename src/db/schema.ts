@@ -1,11 +1,11 @@
 import Dexie, { Table } from 'dexie'
 import { Event } from '../shared/types'
 
-export class ForestTeamDB extends Dexie {
+export class CourseViewDB extends Dexie {
   events!: Table<Event, string>
 
   constructor() {
-    super('ForestTeamDB')
+    super('CourseViewDB')
 
     this.version(1).stores({
       events: 'id, name, date, createdAt, isDemo',
@@ -13,4 +13,4 @@ export class ForestTeamDB extends Dexie {
   }
 }
 
-export const db = new ForestTeamDB()
+export const db = new CourseViewDB()
