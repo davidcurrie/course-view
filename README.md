@@ -1,4 +1,4 @@
-# Forest Team
+# CourseView
 
 > A Progressive Web App for orienteering event officials to manage events, view georeferenced maps, and track GPS locations - even offline in remote forest locations.
 
@@ -111,7 +111,7 @@ The app will process your files and create a new event stored locally on your de
 - **Delete an event**: Click "Delete" (with confirmation)
 - **Storage usage**: Shown at the top of the events page
 
-**How Sharing Works:** When you share an event, the app packages it into 3-4 files (manifest.json, map.jpg, map.jgw, courses.xml) that recipients can import into their own Forest Team app. This ensures recipients get all the data they need.
+**How Sharing Works:** When you share an event, the app packages it into 3-4 files (manifest.json, map.jpg, map.jgw, courses.xml) that recipients can import into their own CourseView app. This ensures recipients get all the data they need.
 
 ## Development
 
@@ -124,8 +124,8 @@ The app will process your files and create a new event stored locally on your de
 
 ```bash
 # Clone the repository
-git clone https://github.com/davidcurrie/forest-team.git
-cd forest-team
+git clone https://github.com/davidcurrie/courseview.git
+cd courseview
 
 # Install dependencies
 npm install
@@ -264,7 +264,7 @@ netlify deploy --prod --dir=dist
 1. Update `vite.config.ts` with your base path:
    ```typescript
    export default defineConfig({
-     base: '/forest-team/',
+     base: '/courseview/',
      // ...
    })
    ```
@@ -383,8 +383,8 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 ## Support
 
 For issues, questions, or suggestions:
-- 📧 Email: support@forestteam.app
-- 🐛 Issues: [GitHub Issues](https://github.com/davidcurrie/forest-team/issues)
+- 📧 Email: support@courseview.app
+- 🐛 Issues: [GitHub Issues](https://github.com/davidcurrie/courseview/issues)
 - 📖 Docs: [User Guide](./docs/USER_GUIDE.md)
 
 ## Roadmap

@@ -1,9 +1,9 @@
-# Forest Team Requirements
+# CourseView Requirements
 
 ## 1. Overview
 
 ### 1.1 Purpose
-The Forest Team application is designed to be used by officials volunteering in the forest at an orienteering event.
+The CourseView application is designed to be used by officials volunteering in the forest at an orienteering event.
 At a high level, it displays a copy of the event map and the courses that have been planned on a mobile device.
 It also uses GPS to display the device's current location on the map.
 

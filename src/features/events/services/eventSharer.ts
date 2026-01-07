@@ -78,7 +78,7 @@ export async function packageEventForSharing(eventId: string): Promise<Shareable
   // 1. Create manifest file
   const manifest: EventManifest = {
     version: '1.0',
-    appName: 'Forest Team',
+    appName: 'CourseView',
     appVersion: '1.0.0',
     eventName: event.name,
     eventDate: event.date,
@@ -177,8 +177,8 @@ export async function shareEvent(eventId: string): Promise<void> {
 
   // Trigger native share dialog
   await navigator.share({
-    title: `Forest Team Event: ${event.name}`,
-    text: `Orienteering event "${event.name}" - Open in Forest Team app`,
+    title: `CourseView Event: ${event.name}`,
+    text: `Orienteering event "${event.name}" - Open in CourseView app`,
     files: filesToShare
   })
 }

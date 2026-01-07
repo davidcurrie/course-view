@@ -1,6 +1,6 @@
-# Contributing to Forest Team
+# Contributing to CourseView
 
-Thank you for your interest in contributing to Forest Team! This guide will help you get started.
+Thank you for your interest in contributing to CourseView! This guide will help you get started.
 
 ## Code of Conduct
 
@@ -68,11 +68,11 @@ Feature requests are welcome! Please include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR-USERNAME/forest-team.git
-cd forest-team
+git clone https://github.com/YOUR-USERNAME/courseview.git
+cd courseview
 
 # Add upstream remote
-git remote add upstream https://github.com/davidcurrie/forest-team.git
+git remote add upstream https://github.com/davidcurrie/courseview.git
 
 # Install dependencies
 npm install
@@ -380,4 +380,4 @@ Contributors are recognized in:
 - Release notes
 - Documentation credits
 
-Thank you for making Forest Team better! 🌲
+Thank you for making CourseView better! 🌲

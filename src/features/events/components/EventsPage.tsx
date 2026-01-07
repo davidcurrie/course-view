@@ -102,7 +102,7 @@ export function EventsPage() {
         <Toolbar>
           <Container maxWidth="md">
             <Typography variant="h5" component="h1" fontWeight="bold">
-              Forest Team
+              CourseView
             </Typography>
           </Container>
         </Toolbar>

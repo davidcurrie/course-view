@@ -122,7 +122,7 @@ Create 4 files:
 
   1. manifest.json (metadata)
   {
-    "appName": "Forest Team",
+    "appName": "CourseView",
     "eventName": "Spring Classic 2024",
     "eventDate": "2024-06-15",
     "courses": [...],
@@ -155,8 +155,8 @@ Create 4 files:
 // eventSharer.shareEvent('abc123')
 ↓
 navigator.share({
-  title: "Forest Team Event: Spring Classic 2024",
-  text: "Orienteering event - Open in Forest Team app",
+  title: "CourseView Event: Spring Classic 2024",
+  text: "Orienteering event - Open in CourseView app",
   files: [manifestFile, mapFile, jgwFile, courseFile]
 })
 ↓
@@ -200,25 +200,25 @@ Attachments:
 [Download All]
 ```
 
-**Step 4: Import to Forest Team**
+**Step 4: Import to CourseView**
 
 **Option A (Future): Automatic**
 ```
 Tap manifest.json file
 ↓
 iOS recognizes .json and asks:
-"Open with Forest Team?"
+"Open with CourseView?"
 ↓
 [Open]
 ↓
-Forest Team automatically imports all associated files
+CourseView automatically imports all associated files
 ↓
 "Successfully imported Spring Classic 2024!"
 ```
 
 **Option B (Initial): Manual**
 ```
-Open Forest Team app
+Open CourseView app
 ↓
 Go to "Import Shared Event"
 ↓
@@ -227,7 +227,7 @@ Select all 4 files from Downloads/Files
 App validates manifest
 ↓
 App processes:
-  - Validates manifest.json is Forest Team export
+  - Validates manifest.json is CourseView export
   - Reads map.jpg into Blob
   - Parses map.jgw into georef object
   - Parses courses.xml into course objects
@@ -367,16 +367,16 @@ Users will need brief instructions:
 > "Tap Share to send your event to another device. This will share the actual map and course files, not just a link."
 
 **Recipient:**
-> "You received 4 files for an orienteering event. Open Forest Team and go to Import → Shared Event, then select all 4 files."
+> "You received 4 files for an orienteering event. Open CourseView and go to Import → Shared Event, then select all 4 files."
 
 **Future (with file association):**
-> "You received an event. Tap the manifest file to import it into Forest Team."
+> "You received an event. Tap the manifest file to import it into CourseView."
 
 ---
 
 ## Conclusion
 
-The Web Share API provides the best solution for Forest Team's sharing limitation:
+The Web Share API provides the best solution for CourseView's sharing limitation:
 
 - ✅ Solves the data transfer problem
 - ✅ Uses native mobile sharing (familiar to users)

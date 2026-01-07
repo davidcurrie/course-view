@@ -4,15 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/forest-team/',
+  base: '/courseview/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Forest Team',
-        short_name: 'Forest Team',
+        name: 'CourseView',
+        short_name: 'CourseView',
         description: 'Orienteering event management for officials',
         theme_color: '#2D5F3F',
         background_color: '#ffffff',

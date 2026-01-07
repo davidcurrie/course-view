@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Complete guide for deploying Forest Team to production.
+Complete guide for deploying CourseView to production.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ Complete guide for deploying Forest Team to production.
 
 ### Build Process
 
-Forest Team is a static Single Page Application (SPA) that needs to be built before deployment:
+CourseView is a static Single Page Application (SPA) that needs to be built before deployment:
 
 ```bash
 npm run build
@@ -80,7 +80,7 @@ Vercel provides the easiest deployment with zero configuration.
 2. **Import Project**
    - Click "Add New Project"
    - Select "Import Git Repository"
-   - Choose your `forest-team` repository
+   - Choose your `courseview` repository
    - Click "Import"
 
 3. **Configure Build Settings**
@@ -100,7 +100,7 @@ Vercel provides the easiest deployment with zero configuration.
    - Provides preview URL when complete
 
 5. **Access Your App**
-   - URL format: `https://forest-team-xxx.vercel.app`
+   - URL format: `https://courseview-xxx.vercel.app`
    - Click URL to test your deployed app
    - Install PWA on your phone to test
 
@@ -111,7 +111,7 @@ Vercel provides the easiest deployment with zero configuration.
 npm install -g vercel
 
 # Navigate to project directory
-cd forest-team
+cd courseview
 
 # Login to Vercel
 vercel login
@@ -123,7 +123,7 @@ vercel
 # - Set up and deploy? Yes
 # - Which scope? (select your account)
 # - Link to existing project? No
-# - Project name? forest-team
+# - Project name? courseview
 # - Directory? ./
 # - Override settings? No
 
@@ -209,7 +209,7 @@ Netlify is another excellent option with similar features.
    - Click "Add new site" > "Import an existing project"
    - Choose "Deploy with GitHub"
    - Authorize Netlify
-   - Select `forest-team` repository
+   - Select `courseview` repository
 
 3. **Configure Build Settings**
 
@@ -236,7 +236,7 @@ Netlify is another excellent option with similar features.
 npm install -g netlify-cli
 
 # Navigate to project
-cd forest-team
+cd courseview
 
 # Build the app
 npm run build
@@ -304,7 +304,7 @@ GitHub Pages serves from a subdirectory, so update `vite.config.ts`:
 ```typescript
 // vite.config.ts
 export default defineConfig({
-  base: '/forest-team/', // Must match repo name
+  base: '/courseview/', // Must match repo name
   plugins: [
     // ... rest of config
   ]
@@ -378,7 +378,7 @@ git push origin main
 ```
 
 4. **Access Your App**
-   - URL: `https://YOUR-USERNAME.github.io/forest-team/`
+   - URL: `https://YOUR-USERNAME.github.io/courseview/`
    - Wait 2-3 minutes for first deployment
 
 ### Method 2: Manual Deployment
@@ -607,7 +607,7 @@ npm run preview
 
 ## Recommended: Vercel
 
-For Forest Team, we recommend **Vercel** because:
+For CourseView, we recommend **Vercel** because:
 
 1. ✅ Zero configuration required
 2. ✅ Automatic Vite detection

@@ -1,6 +1,6 @@
-# Forest Team User Guide
+# CourseView User Guide
 
-Complete guide for orienteering event officials using Forest Team.
+Complete guide for orienteering event officials using CourseView.
 
 ## Table of Contents
 
@@ -15,9 +15,9 @@ Complete guide for orienteering event officials using Forest Team.
 
 ## Getting Started
 
-### What is Forest Team?
+### What is CourseView?
 
-Forest Team is a mobile-friendly web app designed for orienteering event officials who need to:
+CourseView is a mobile-friendly web app designed for orienteering event officials who need to:
 - View georeferenced maps in the forest
 - See course layouts with accurate control positions
 - Track their GPS location to verify control placement
@@ -38,7 +38,7 @@ Forest Team is a mobile-friendly web app designed for orienteering event officia
 
 ### On iPhone (iOS)
 
-1. Open Safari and visit the Forest Team URL
+1. Open Safari and visit the CourseView URL
 2. Tap the **Share** button (square with arrow)
 3. Scroll down and tap **Add to Home Screen**
 4. Tap **Add** in the top-right corner
@@ -46,7 +46,7 @@ Forest Team is a mobile-friendly web app designed for orienteering event officia
 
 ### On Android
 
-1. Open Chrome and visit the Forest Team URL
+1. Open Chrome and visit the CourseView URL
 2. Tap the **three-dot menu** in the top-right
 3. Tap **Add to Home screen** or **Install app**
 4. Tap **Add** or **Install**
@@ -248,7 +248,7 @@ Simply tap **View Map** on any event to open it.
 
 ### Sharing Events
 
-Forest Team supports true event sharing by packaging your event into files that can be sent to others.
+CourseView supports true event sharing by packaging your event into files that can be sent to others.
 
 **How to Share an Event:**
 
@@ -287,7 +287,7 @@ See "Importing Shared Events" section below.
 When someone shares an event with you:
 
 1. **Receive the files** via AirDrop, email, messages, etc.
-2. **Open Forest Team** app
+2. **Open CourseView** app
 3. **Tap "Import Shared Event"** on the Events page
 4. **Select all files** you received:
    - manifest.json (required)
@@ -492,7 +492,7 @@ When using on desktop:
 
 ## Accessibility
 
-Forest Team is designed for outdoor use:
+CourseView is designed for outdoor use:
 
 - **Large touch targets** (44x44 points) - works with gloves
 - **High contrast colors** - readable in bright sunlight

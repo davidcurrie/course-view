@@ -93,8 +93,8 @@ export function ImportEvent() {
           const text = await manifestEntry.async('text')
           const parsed = JSON.parse(text) as EventManifest
 
-          if (parsed.appName !== 'Forest Team') {
-            setError('Invalid ZIP file - not a Forest Team event export')
+          if (parsed.appName !== 'CourseView') {
+            setError('Invalid ZIP file - not a CourseView event export')
             return
           }
 
@@ -117,9 +117,9 @@ export function ImportEvent() {
         const text = await manifestFile.text()
         const parsed = JSON.parse(text) as EventManifest
 
-        // Validate it's a Forest Team manifest
-        if (parsed.appName !== 'Forest Team') {
-          setError('Invalid manifest file - not a Forest Team event export')
+        // Validate it's a CourseView manifest
+        if (parsed.appName !== 'CourseView') {
+          setError('Invalid manifest file - not a CourseView event export')
           return
         }
 
@@ -166,8 +166,8 @@ export function ImportEvent() {
     const manifestText = await manifestEntry.async('text')
     const manifestData = JSON.parse(manifestText) as EventManifest
 
-    if (manifestData.appName !== 'Forest Team') {
-      throw new Error('Invalid manifest - not a Forest Team export')
+    if (manifestData.appName !== 'CourseView') {
+      throw new Error('Invalid manifest - not a CourseView export')
     }
 
     // 2. Find required files
@@ -213,8 +213,8 @@ export function ImportEvent() {
     const manifestText = await manifestFile.text()
     const manifestData = JSON.parse(manifestText) as EventManifest
 
-    if (manifestData.appName !== 'Forest Team') {
-      throw new Error('Invalid manifest - not a Forest Team export')
+    if (manifestData.appName !== 'CourseView') {
+      throw new Error('Invalid manifest - not a CourseView export')
     }
 
     // 2. Find required files
@@ -417,7 +417,7 @@ export function ImportEvent() {
                   }}
                 />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                  Select a .forestteam.zip file exported from Forest Team
+                  Select a .courseview.zip file exported from CourseView
                 </Typography>
               </Box>
 
