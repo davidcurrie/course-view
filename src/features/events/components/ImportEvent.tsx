@@ -93,8 +93,8 @@ export function ImportEvent() {
           const text = await manifestEntry.async('text')
           const parsed = JSON.parse(text) as EventManifest
 
-          if (parsed.appName !== 'CourseView') {
-            setError('Invalid ZIP file - not a CourseView event export')
+          if (parsed.appName !== 'Course View') {
+            setError('Invalid ZIP file - not a Course View event export')
             return
           }
 
@@ -117,9 +117,9 @@ export function ImportEvent() {
         const text = await manifestFile.text()
         const parsed = JSON.parse(text) as EventManifest
 
-        // Validate it's a CourseView manifest
-        if (parsed.appName !== 'CourseView') {
-          setError('Invalid manifest file - not a CourseView event export')
+        // Validate it's a Course View manifest
+        if (parsed.appName !== 'Course View') {
+          setError('Invalid manifest file - not a Course View event export')
           return
         }
 
@@ -166,8 +166,8 @@ export function ImportEvent() {
     const manifestText = await manifestEntry.async('text')
     const manifestData = JSON.parse(manifestText) as EventManifest
 
-    if (manifestData.appName !== 'CourseView') {
-      throw new Error('Invalid manifest - not a CourseView export')
+    if (manifestData.appName !== 'Course View') {
+      throw new Error('Invalid manifest - not a Course View export')
     }
 
     // 2. Find required files
@@ -213,8 +213,8 @@ export function ImportEvent() {
     const manifestText = await manifestFile.text()
     const manifestData = JSON.parse(manifestText) as EventManifest
 
-    if (manifestData.appName !== 'CourseView') {
-      throw new Error('Invalid manifest - not a CourseView export')
+    if (manifestData.appName !== 'Course View') {
+      throw new Error('Invalid manifest - not a Course View export')
     }
 
     // 2. Find required files
@@ -417,7 +417,7 @@ export function ImportEvent() {
                   }}
                 />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                  Select a .courseview.zip file exported from CourseView
+                  Select a .courseview.zip file exported from Course View
                 </Typography>
               </Box>
 

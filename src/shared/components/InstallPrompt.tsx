@@ -98,7 +98,7 @@ export function InstallPrompt() {
           <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="h6" gutterBottom>
-                Install CourseView
+                Install Course View
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Install this app on your device for quick access and offline use.

@@ -122,7 +122,7 @@ Create 4 files:
 
   1. manifest.json (metadata)
   {
-    "appName": "CourseView",
+    "appName": "Course View",
     "eventName": "Spring Classic 2024",
     "eventDate": "2024-06-15",
     "courses": [...],
@@ -155,8 +155,8 @@ Create 4 files:
 // eventSharer.shareEvent('abc123')
 ↓
 navigator.share({
-  title: "CourseView Event: Spring Classic 2024",
-  text: "Orienteering event - Open in CourseView app",
+  title: "Course View Event: Spring Classic 2024",
+  text: "Orienteering event - Open in Course View app",
   files: [manifestFile, mapFile, jgwFile, courseFile]
 })
 ↓
@@ -200,25 +200,25 @@ Attachments:
 [Download All]
 ```
 
-**Step 4: Import to CourseView**
+**Step 4: Import to Course View**
 
 **Option A (Future): Automatic**
 ```
 Tap manifest.json file
 ↓
 iOS recognizes .json and asks:
-"Open with CourseView?"
+"Open with Course View?"
 ↓
 [Open]
 ↓
-CourseView automatically imports all associated files
+Course View automatically imports all associated files
 ↓
 "Successfully imported Spring Classic 2024!"
 ```
 
 **Option B (Initial): Manual**
 ```
-Open CourseView app
+Open Course View app
 ↓
 Go to "Import Shared Event"
 ↓
@@ -227,7 +227,7 @@ Select all 4 files from Downloads/Files
 App validates manifest
 ↓
 App processes:
-  - Validates manifest.json is CourseView export
+  - Validates manifest.json is Course View export
   - Reads map.jpg into Blob
   - Parses map.jgw into georef object
   - Parses courses.xml into course objects
@@ -367,16 +367,16 @@ Users will need brief instructions:
 > "Tap Share to send your event to another device. This will share the actual map and course files, not just a link."
 
 **Recipient:**
-> "You received 4 files for an orienteering event. Open CourseView and go to Import → Shared Event, then select all 4 files."
+> "You received 4 files for an orienteering event. Open Course View and go to Import → Shared Event, then select all 4 files."
 
 **Future (with file association):**
-> "You received an event. Tap the manifest file to import it into CourseView."
+> "You received an event. Tap the manifest file to import it into Course View."
 
 ---
 
 ## Conclusion
 
-The Web Share API provides the best solution for CourseView's sharing limitation:
+The Web Share API provides the best solution for Course View's sharing limitation:
 
 - ✅ Solves the data transfer problem
 - ✅ Uses native mobile sharing (familiar to users)

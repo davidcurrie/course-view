@@ -2,7 +2,7 @@
 
 ## Overview
 
-CourseView uses **Vitest** for unit and integration testing, along with **React Testing Library** for component testing. The test suite ensures reliability for orienteering officials working in remote forest locations.
+Course View uses **Vitest** for unit and integration testing, along with **React Testing Library** for component testing. The test suite ensures reliability for orienteering officials working in remote forest locations.
 
 ## Running Tests
 

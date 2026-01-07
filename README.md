@@ -1,4 +1,4 @@
-# CourseView
+# Course View
 
 > A Progressive Web App for orienteering event officials to manage events, view georeferenced maps, and track GPS locations - even offline in remote forest locations.
 
@@ -111,7 +111,7 @@ The app will process your files and create a new event stored locally on your de
 - **Delete an event**: Click "Delete" (with confirmation)
 - **Storage usage**: Shown at the top of the events page
 
-**How Sharing Works:** When you share an event, the app packages it into 3-4 files (manifest.json, map.jpg, map.jgw, courses.xml) that recipients can import into their own CourseView app. This ensures recipients get all the data they need.
+**How Sharing Works:** When you share an event, the app packages it into 3-4 files (manifest.json, map.jpg, map.jgw, courses.xml) that recipients can import into their own Course View app. This ensures recipients get all the data they need.
 
 ## Development
 

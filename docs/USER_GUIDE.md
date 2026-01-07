@@ -1,6 +1,6 @@
-# CourseView User Guide
+# Course View User Guide
 
-Complete guide for orienteering event officials using CourseView.
+Complete guide for orienteering event officials using Course View.
 
 ## Table of Contents
 
@@ -15,9 +15,9 @@ Complete guide for orienteering event officials using CourseView.
 
 ## Getting Started
 
-### What is CourseView?
+### What is Course View?
 
-CourseView is a mobile-friendly web app designed for orienteering event officials who need to:
+Course View is a mobile-friendly web app designed for orienteering event officials who need to:
 - View georeferenced maps in the forest
 - See course layouts with accurate control positions
 - Track their GPS location to verify control placement
@@ -38,7 +38,7 @@ CourseView is a mobile-friendly web app designed for orienteering event official
 
 ### On iPhone (iOS)
 
-1. Open Safari and visit the CourseView URL
+1. Open Safari and visit the Course View URL
 2. Tap the **Share** button (square with arrow)
 3. Scroll down and tap **Add to Home Screen**
 4. Tap **Add** in the top-right corner
@@ -46,7 +46,7 @@ CourseView is a mobile-friendly web app designed for orienteering event official
 
 ### On Android
 
-1. Open Chrome and visit the CourseView URL
+1. Open Chrome and visit the Course View URL
 2. Tap the **three-dot menu** in the top-right
 3. Tap **Add to Home screen** or **Install app**
 4. Tap **Add** or **Install**
@@ -248,7 +248,7 @@ Simply tap **View Map** on any event to open it.
 
 ### Sharing Events
 
-CourseView supports true event sharing by packaging your event into files that can be sent to others.
+Course View supports true event sharing by packaging your event into files that can be sent to others.
 
 **How to Share an Event:**
 
@@ -287,7 +287,7 @@ See "Importing Shared Events" section below.
 When someone shares an event with you:
 
 1. **Receive the files** via AirDrop, email, messages, etc.
-2. **Open CourseView** app
+2. **Open Course View** app
 3. **Tap "Import Shared Event"** on the Events page
 4. **Select all files** you received:
    - manifest.json (required)
@@ -492,7 +492,7 @@ When using on desktop:
 
 ## Accessibility
 
-CourseView is designed for outdoor use:
+Course View is designed for outdoor use:
 
 - **Large touch targets** (44x44 points) - works with gloves
 - **High contrast colors** - readable in bright sunlight

@@ -33,7 +33,7 @@ export async function packageEventForSharing(eventId: string): Promise<Shareable
   // 1. Create manifest file with metadata
   const manifest = {
     version: '1.0',
-    appName: 'CourseView',
+    appName: 'Course View',
     eventName: event.name,
     eventDate: event.date,
     courses: event.courses.map(c => ({
@@ -153,8 +153,8 @@ export function EventCard({ event, onDelete }: EventCardProps) {
 
       // Use Web Share API
       await navigator.share({
-        title: `CourseView Event: ${event.name}`,
-        text: `Sharing orienteering event "${event.name}" from CourseView app`,
+        title: `Course View Event: ${event.name}`,
+        text: `Sharing orienteering event "${event.name}" from Course View app`,
         files: filesToShare
       })
 
@@ -217,7 +217,7 @@ export function canUseWebShare(): boolean {
 
 ### 4. Recipient Imports Files
 
-Create an import flow that detects shared CourseView packages:
+Create an import flow that detects shared Course View packages:
 
 ```typescript
 // src/features/upload/components/ImportSharedEvent.tsx
@@ -233,7 +233,7 @@ export function ImportSharedEvent() {
     )
 
     if (!manifestFile) {
-      alert('This does not appear to be a shared CourseView event')
+      alert('This does not appear to be a shared Course View event')
       return
     }
 
@@ -242,8 +242,8 @@ export function ImportSharedEvent() {
       const manifestText = await manifestFile.text()
       const manifest = JSON.parse(manifestText)
 
-      // Validate it's a CourseView export
-      if (manifest.appName !== 'CourseView') {
+      // Validate it's a Course View export
+      if (manifest.appName !== 'Course View') {
         throw new Error('Invalid event package')
       }
 
@@ -310,13 +310,13 @@ export function ImportSharedEvent() {
 
 **Option A: Automatic Import (future enhancement)**
 1. Tap the manifest file
-2. System recognizes it as CourseView data
-3. Opens CourseView app automatically
+2. System recognizes it as Course View data
+3. Opens Course View app automatically
 4. Imports all files in one click
 
 **Option B: Manual Import (initial version)**
 1. Receive files via AirDrop/Messages/etc
-2. Open CourseView app
+2. Open Course View app
 3. Go to "Import Shared Event"
 4. Select all received files
 5. Click "Import"
@@ -441,7 +441,7 @@ This gives users a `.forestteam.zip` file they can share however they want (emai
 2. **Desktop/Unsupported**: Provide ZIP download + email option
 3. **Import**: Support both individual files and .forestteam.zip packages
 
-This gives the best experience on mobile (where CourseView is primarily used) while maintaining desktop compatibility.
+This gives the best experience on mobile (where Course View is primarily used) while maintaining desktop compatibility.
 
 ## Code Estimate
 

@@ -1,6 +1,6 @@
-# Contributing to CourseView
+# Contributing to Course View
 
-Thank you for your interest in contributing to CourseView! This guide will help you get started.
+Thank you for your interest in contributing to Course View! This guide will help you get started.
 
 ## Code of Conduct
 
@@ -380,4 +380,4 @@ Contributors are recognized in:
 - Release notes
 - Documentation credits
 
-Thank you for making CourseView better! 🌲
+Thank you for making Course View better! 🌲

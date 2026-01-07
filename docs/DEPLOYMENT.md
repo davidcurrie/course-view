@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Complete guide for deploying CourseView to production.
+Complete guide for deploying Course View to production.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ Complete guide for deploying CourseView to production.
 
 ### Build Process
 
-CourseView is a static Single Page Application (SPA) that needs to be built before deployment:
+Course View is a static Single Page Application (SPA) that needs to be built before deployment:
 
 ```bash
 npm run build
@@ -607,7 +607,7 @@ npm run preview
 
 ## Recommended: Vercel
 
-For CourseView, we recommend **Vercel** because:
+For Course View, we recommend **Vercel** because:
 
 1. ✅ Zero configuration required
 2. ✅ Automatic Vite detection

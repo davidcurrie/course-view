@@ -109,7 +109,7 @@ describe('eventSharer', () => {
       const manifestText = await pkg.manifest.text()
       const manifest = JSON.parse(manifestText)
 
-      expect(manifest.appName).toBe('CourseView')
+      expect(manifest.appName).toBe('Course View')
       expect(manifest.eventName).toBe('Test Event 2024')
       expect(manifest.eventDate).toBe('2024-06-15')
       expect(manifest.courses).toHaveLength(1)
@@ -207,8 +207,8 @@ describe('eventSharer', () => {
       await shareEvent('test-event-1')
 
       expect(shareSpy).toHaveBeenCalledWith({
-        title: 'CourseView Event: Test Event 2024',
-        text: 'Orienteering event "Test Event 2024" - Open in CourseView app',
+        title: 'Course View Event: Test Event 2024',
+        text: 'Orienteering event "Test Event 2024" - Open in Course View app',
         files: expect.arrayContaining([
           expect.objectContaining({ name: expect.stringMatching(/manifest\.json/) }),
           expect.objectContaining({ name: expect.stringMatching(/map\.jpg/) }),

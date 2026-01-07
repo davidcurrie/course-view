@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'CourseView',
-        short_name: 'CourseView',
+        name: 'Course View',
+        short_name: 'Course View',
         description: 'Orienteering event management for officials',
         theme_color: '#2D5F3F',
         background_color: '#ffffff',
