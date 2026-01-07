@@ -211,7 +211,7 @@ export function MapPage() {
       </AppBar>
 
       {/* Map */}
-      <Box sx={{ flex: 1, position: 'relative' }}>
+      <Box sx={{ flex: 1, position: 'relative', zIndex: 1 }}>
         <MapView
           imageUrl={imageUrl}
           bounds={event.map.bounds}
